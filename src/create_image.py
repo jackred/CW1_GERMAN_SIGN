@@ -10,13 +10,11 @@ import csv
 import sys
 from os import mkdir
 
-IMG_SIZE = 48
-
+# IMG_SIZE = 48
 
 
 if (len(sys.argv) == 1):
     sys.exit('toto')
-
 
 
 with open(sys.argv[1]) as csvf:
@@ -32,5 +30,5 @@ mkdir('test')
 for j in range(len(imgs)):
     with open('./test/test' + str(j) + '.ppm', 'w+') as f:
         f.write('P3\n48 48 255\n')
-        f.write('\n'.join([str(int(float(i))) + ' ' + str(int(float(i))) + ' ' +
-                           str(int(float(i))) for i in imgs[j]]))
+        f.write('\n'.join([str(int(float(i))) + ' ' + str(int(float(i))) + ' '
+                           + str(int(float(i))) for i in imgs[j]]))
