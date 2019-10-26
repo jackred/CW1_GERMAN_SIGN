@@ -1,6 +1,7 @@
 import csv
 import matplotlib.pyplot as plt
 
+
 def _get_file_content(filename):
     ''' loads a .csv file into the ram '''
     img = []
@@ -11,6 +12,7 @@ def _get_file_content(filename):
     img.pop(0)
     return img
 
+
 def generate_histogram(img):
     ''' generates histogram of all pixels value for all the images '''
     stat = []
@@ -20,6 +22,7 @@ def generate_histogram(img):
         for elem in row:
             stat[int(float(elem)) - 1] += 1
     return stat
+
 
 def generate_pix_histogram(img):
     ''' generates histogram of all pixels value for each columns '''
@@ -34,6 +37,7 @@ def generate_pix_histogram(img):
             pix[j - 1][int(float(img[i][j])) - 1] += 1
     return pix
 
+
 def generate_spec_pix_histogram(img, x):
     ''' generates histogram of all pixels value for a specific column '''
     pix = []
@@ -43,24 +47,27 @@ def generate_spec_pix_histogram(img, x):
         pix[int(float(img[i][x + 1])) - 1] += 1
     return pix
 
+
 def show_histogram(stat):
     ''' shows histogram '''
     print(len(stat))
     print(stat)
-    plt.bar(range(1, 256),stat)
+    plt.bar(range(1, 256), stat)
     plt.show()
+
 
 def show_all_diagrams(pix):
     ''' shows all diagrams one by one '''
-    for i in range(len(pixel_stat)):
+    for i in range(len(pix)):
         if i % 100:
-            show_histogram(pixel_stat[i])
+            show_histogram(pix[i])
+
 
 def generate_graph(filename):
     img = _get_file_content(filename)
     print('loaded')
 
-    stat = generate_histogram(img)
+    generate_histogram(img)
     print('done basic')
 
     pixel_stat = generate_pix_histogram(img)
@@ -72,5 +79,6 @@ def generate_graph(filename):
 
     show_all_diagrams(pixel_stat)
 
+
 if __name__ == '__main__':
-    generate_graph('./data/x_train_gr_smpl.csv')
+    generate_graph('../data/x_train_gr_smpl.csv')
