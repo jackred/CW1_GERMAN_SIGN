@@ -9,6 +9,8 @@
 import sys
 from sklearn.naive_bayes import GaussianNB
 from numpy import array as np_array
+from helper import get_labels, \
+    get_predicted, get_data, get_data_and_train
 
 DELI = ','
 FOLDER = '../data/random/'
@@ -18,21 +20,6 @@ SEP = '_'
 TEST = 'test' + SEP
 LEARN = 'learn' + SEP
 EXT = '.csv'
-
-
-def get_data_from_files(name, fn):
-    res = []
-    with open(name) as f:
-        f.readline()  # ignore header
-        for line in f:
-            res.append(fn(line))
-    return res
-
-
-def get_value_from_file(name_data):
-    data = get_data_from_files(name_data,
-                               lambda x: [float(i) for i in x.split(DELI)])
-    return data
 
 
 def sk_bayes(data, label, data_train=None, predicted=None):
@@ -59,30 +46,13 @@ def bayes(fn_label, data, data_train=None):
         sk_bayes(data, label, data_train, predicted)
 
 
-def get_label(sep='', i=''):
-    # print(FOLDER+LABEL_FILE+sep+str(i)+EXT)
-    label = get_data_from_files(FOLDER+LABEL_FILE+sep+str(i)+EXT, float)
-    return label, label
-
-
-def get_predicted(sep='', i=''):
-    # print(FOLDER+LEARN+LABEL_FILE+sep+str(i)+EXT,
-    #       FOLDER+TEST+LABEL_FILE+sep+str(i)+EXT)
-    label = get_data_from_files(FOLDER+LEARN+LABEL_FILE+sep+str(i)+EXT,
-                                float)
-    predicted = get_data_from_files(FOLDER+TEST+LABEL_FILE+sep+str(i)+EXT,
-                                    float)
-    return label, predicted
-
-
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         if sys.argv[1] == 'test':
-            data = get_value_from_file(FOLDER+DATA_FILE)
-            bayes(get_label, data)
+            data = get_data()
+            bayes(get_labels, data)
         elif sys.argv[1] == 'train':
-            data = get_value_from_file(FOLDER+LEARN+DATA_FILE)
-            data_train = get_value_from_file(FOLDER+TEST+DATA_FILE)
+            data, data_train = get_data_and_train()
             bayes(get_predicted, data, data_train)
     else:
         exit('wrong number of argument')
