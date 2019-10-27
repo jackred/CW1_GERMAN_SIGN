@@ -47,41 +47,42 @@ def sk_bayes(data, label, data_train=None, predicted=None):
           % (len(data_train), mislabeled))
 
 
-def learn_test():
-    data = get_value_from_file(FOLDER+LEARN+DATA_FILE)
-    label = get_data_from_files(FOLDER+LEARN+LABEL_FILE+EXT, float)
-    data_train = get_value_from_file(FOLDER+TEST+DATA_FILE)
-    predicted = get_data_from_files(FOLDER+TEST+LABEL_FILE+EXT, float)
+def bayes(fn_label, data, data_train=None):
+    data_train = data_train or data
+    label, predicted = fn_label()
     print('using all class')
     sk_bayes(data, label, data_train, predicted)
     for i in range(10):
         print('=======')
-        label = get_data_from_files(FOLDER+LEARN+LABEL_FILE+SEP+str(i)+EXT,
-                                    float)
-        predicted = get_data_from_files(FOLDER+TEST+LABEL_FILE+SEP+str(i)+EXT,
-                                        float)
+        label, predicted = fn_label(sep=SEP, i=i)
         print('class %d' % i)
         sk_bayes(data, label, data_train, predicted)
 
 
-def test_against():
-    data = get_value_from_file(FOLDER+DATA_FILE)
-    label = get_data_from_files(FOLDER+LABEL_FILE+EXT, float)
-    print('using all class')
-    sk_bayes(data, label)
-    for i in range(10):
-        print('=======')
-        label = get_data_from_files(FOLDER+LABEL_FILE+SEP+str(i)+EXT, float)
-        print('class %d' % i)
-        sk_bayes(data, label)
+def get_label(sep='', i=''):
+    # print(FOLDER+LABEL_FILE+sep+str(i)+EXT)
+    label = get_data_from_files(FOLDER+LABEL_FILE+sep+str(i)+EXT, float)
+    return label, label
+
+
+def get_predicted(sep='', i=''):
+    # print(FOLDER+LEARN+LABEL_FILE+sep+str(i)+EXT,
+    #       FOLDER+TEST+LABEL_FILE+sep+str(i)+EXT)
+    label = get_data_from_files(FOLDER+LEARN+LABEL_FILE+sep+str(i)+EXT,
+                                float)
+    predicted = get_data_from_files(FOLDER+TEST+LABEL_FILE+sep+str(i)+EXT,
+                                    float)
+    return label, predicted
 
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
-        if sys.argv[1] == 'train':
-            learn_test()
-            pass
-        elif sys.argv[1] == 'test':
-            test_against()
+        if sys.argv[1] == 'test':
+            data = get_value_from_file(FOLDER+DATA_FILE)
+            bayes(get_label, data)
+        elif sys.argv[1] == 'train':
+            data = get_value_from_file(FOLDER+LEARN+DATA_FILE)
+            data_train = get_value_from_file(FOLDER+TEST+DATA_FILE)
+            bayes(get_predicted, data, data_train)
     else:
         exit('wrong number of argument')
