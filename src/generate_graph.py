@@ -63,8 +63,7 @@ def _stdRow(data):
     return ret
 
 def save_stat(stat, filename):
-    # print(len(stat))
-    # print(len(stat[0]))
+    ''' saves a graph in a csv file '''
     with open(filename, 'w') as f:
         writer = csv.writer(f)
         writer.writerow(_stdRow(stat[0]))
@@ -72,6 +71,7 @@ def save_stat(stat, filename):
             writer.writerow(row)
 
 def get_saved_stat(filename):
+    ''' load a saved graph from a csv file '''
     data = get_file_content(filename)
     ret = []
     for i in range(len(data)):
