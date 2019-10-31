@@ -7,7 +7,7 @@
 # author: JackRed <jackred@tuta.io>
 
 
-import csv
+#  import csv
 from random import randint
 
 
