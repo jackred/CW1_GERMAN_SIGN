@@ -6,7 +6,8 @@
 
 # author: JackRed <jackred@tuta.io>
 
-from numpy import array as np_array
+import numpy as np
+
 
 DELI = ','
 FOLDER = '../data/random/'
@@ -24,7 +25,7 @@ def get_data_from_files(name, fn):
         f.readline()  # ignore header
         for line in f:
             res.append(fn(line))
-    return np_array(res)
+    return np.array(res)
 
 
 def get_value_from_file(name_data, deli):
@@ -35,12 +36,12 @@ def get_value_from_file(name_data, deli):
 
 def get_label(sep='', i='', folder=FOLDER, label_file=LABEL_FILE, ext=EXT):
     # print(folder+label_file+sep+str(i)+EXT)
-    label = get_data_from_files(folder+label_file+sep+str(i)+ext, float)
+    label = get_data_from_files(folder+label_file+sep+str(i)+ext, int)
     return label
 
 
-def get_labels(sep='', i=''):
-    label = get_label(sep, i)
+def get_labels(sep='', i='', folder=FOLDER, label_file=LABEL_FILE, ext=EXT):
+    label = get_label(sep, i, folder, label_file, ext)
     return label, label
 
 
@@ -54,8 +55,8 @@ def get_predicted(sep='', i=''):
     return label, predicted
 
 
-def get_data_value(folder=FOLDER, data_file=DATA_FILE, deli=DELI):
-    return get_value_from_file(folder+data_file, deli)
+def get_data_value(name='', folder=FOLDER, data_file=DATA_FILE, deli=DELI):
+    return get_value_from_file(name or folder+data_file, deli)
 
 
 def get_data_raw(name='', folder=FOLDER, data_file=DATA_FILE):
