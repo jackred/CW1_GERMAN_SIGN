@@ -26,7 +26,7 @@ def compare_class(kmeans):
     print('found: ', found)
     label = np_array(get_label())
     print('label loaded')
-    size_one_class = len(label) / 10
+    size_one_class = [1410, 1860, 420, 1320, 2100, 2160, 780, 240, 2070, 300]
     for j in range(0, 9):
         print('\n\n--------\n')
         for i in range(0, 9):
@@ -35,9 +35,9 @@ def compare_class(kmeans):
             kj_class = kmeans.labels_ == j
             li_class = label == i
             compare = np_logical_and(kj_class, li_class).sum()
-            percentage = (compare / size_one_class) * 100
+            percentage = (compare / size_one_class[i]) * 100
             print('good: %d out of %d | accuracy: %.2f%%' %
-                  (compare, size_one_class, percentage))
+                  (compare, size_one_class[i], percentage))
 
 
 if __name__ == '__main__':
