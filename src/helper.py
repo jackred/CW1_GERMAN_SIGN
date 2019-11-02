@@ -34,14 +34,17 @@ def get_value_from_file(name_data, deli):
     return data
 
 
-def get_label(sep='', i='', folder=FOLDER, label_file=LABEL_FILE, ext=EXT):
+def get_label(sep='', i='', name='', folder=FOLDER, label_file=LABEL_FILE,
+              ext=EXT):
     # print(folder+label_file+sep+str(i)+EXT)
-    label = get_data_from_files(folder+label_file+sep+str(i)+ext, int)
+    label = get_data_from_files((name or folder+label_file)+sep+str(i)+ext,
+                                int)
     return label
 
 
-def get_labels(sep='', i='', folder=FOLDER, label_file=LABEL_FILE, ext=EXT):
-    label = get_label(sep, i, folder, label_file, ext)
+def get_labels(sep='', i='', name='', folder=FOLDER, label_file=LABEL_FILE,
+               ext=EXT):
+    label = get_label(sep, i, name, folder, label_file, ext)
     return label, label
 
 

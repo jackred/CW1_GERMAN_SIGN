@@ -6,12 +6,12 @@
 
 # author: JackRed <jackred@tuta.io>
 
-import sys
+import argparse
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, ComplementNB, \
     MultinomialNB
-from numpy import unique as np_unique,  \
-    logical_and as np_logical_and
-from helper import get_labels, get_predicted, get_data, get_data_and_train, SEP
+from sklearn.model_selection import train_test_split
+import numpy as np
+from helper import get_label, get_data_value, SEP
 
 L = 8
 NB = {
@@ -54,10 +54,10 @@ def make_one_matrix(np_predicted, y_predicted, lb, i):
     y_predicted_i = y_predicted == i
     s_p_i = predicted_i.sum()
     s_y_i = y_predicted_i.sum()
-    total = np_predicted.size
+    total = len(np_predicted)
     a_s_p_i = total - s_p_i
     # a_s_y_i = total - s_y_i
-    true_positive = np_logical_and(predicted_i, y_predicted_i).sum()
+    true_positive = np.logical_and(predicted_i, y_predicted_i).sum()
     false_positive = s_y_i - true_positive
     false_negative = s_p_i - true_positive
     true_negative = a_s_p_i - false_positive
@@ -73,39 +73,54 @@ def make_matrix(np_predicted, y_predicted, lb):
             make_one_matrix(np_predicted, y_predicted, lb, i)
 
 
-def sk_bayes(fn, data, label, data_train=None, predicted=None):
+def sk_bayes(fn, data, label, split, shuffle):
     nb = fn()
-    y_predicted = nb.fit(data, label).predict(data_train)
-    mislabeled = (predicted != y_predicted).sum()
+    rand = np.random.randint(10000000)
+    data_train, data_test = train_test_split(data,
+                                             shuffle=shuffle,
+                                             random_state=rand,
+                                             test_size=split)
+    label_train, label_test = train_test_split(label,
+                                               shuffle=shuffle,
+                                               random_state=rand,
+                                               test_size=split)
+    y_predicted = nb.fit(data_train, label_train).predict(data_test)
+    mislabeled = (label_test != y_predicted).sum()
     print('accuracy: %.3f%%' % ((1 - (mislabeled / len(data_train))) * 100))
-    lb = np_unique(label)
-    make_matrix(predicted, y_predicted, lb)
+    lb = np.unique(label)
+    make_matrix(label_test, y_predicted, lb)
 
 
-def bayes(name_nb, fn_label, data, data_train=None):
-    if data_train is None:
-        data_train = data
-    label, predicted = fn_label()
+def bayes(name_nb, fn_label, data, split, shuffle):
+    label = fn_label()
     print('using all class')
     print('****%s****' % NB[name_nb]['name'])
-    sk_bayes(NB[name_nb]['fn'], data, label, data_train, predicted)
+    sk_bayes(NB[name_nb]['fn'], data, label, split, shuffle)
     for i in range(10):
         print('=======')
-        label, predicted = fn_label(sep=SEP, i=i)
+        label = fn_label(sep=SEP, i=i)
         print('class %d' % i)
-        sk_bayes(NB[name_nb]['fn'], data, label, data_train, predicted)
+        sk_bayes(NB[name_nb]['fn'], data, label, split, shuffle)
+
+
+def parse_args():
+    argp = argparse.ArgumentParser('sklearn bayes')
+    argp.add_argument('-r', dest='randomize', default=False,
+                      action='store_true')
+    argp.add_argument('-s', dest='split', type=float, default=1)
+    argp.add_argument('-d', dest='data', default='')
+    argp.add_argument('-l', dest='label', default='')
+    argp.add_argument('-f', dest='folder', default='')
+    argp.add_argument('-b', dest='bayes', required=True)
+    return argp.parse_args()
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 3:
-        if sys.argv[2] in NB:
-            if sys.argv[1] == 'test':
-                data = get_data()
-                bayes(sys.argv[2], get_labels, data)
-            elif sys.argv[1] == 'train':
-                data, data_train = get_data_and_train()
-                bayes(sys.argv[2], get_predicted, data, data_train)
-        else:
-            exit('wrong argument, list is: %s' % ', '.join(NB))
-    else:
-        exit('wrong number of argument')
+    args = parse_args()
+    data = get_data_value(name=args.folder + args.data)
+    bayes(name_nb=args.bayes,
+          fn_label=lambda sep='', i='':
+          get_label(sep=sep, i=i, name=args.folder + args.label),
+          data=data,
+          split=args.split,
+          shuffle=args.randomize)
