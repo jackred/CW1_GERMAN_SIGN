@@ -6,6 +6,8 @@
 
 # author: JackRed <jackred@tuta.io>
 
+from numpy import array as np_array
+
 DELI = ','
 FOLDER = '../data/random/'
 DATA_FILE = 'r_x_train_gr_smpl.csv'
@@ -22,7 +24,7 @@ def get_data_from_files(name, fn):
         f.readline()  # ignore header
         for line in f:
             res.append(fn(line))
-    return res
+    return np_array(res)
 
 
 def get_value_from_file(name_data, deli):
@@ -31,9 +33,9 @@ def get_value_from_file(name_data, deli):
     return data
 
 
-def get_label(sep='', i=''):
-    # print(FOLDER+LABEL_FILE+sep+str(i)+EXT)
-    label = get_data_from_files(FOLDER+LABEL_FILE+sep+str(i)+EXT, float)
+def get_label(sep='', i='', folder=FOLDER, label_file=LABEL_FILE, ext=EXT):
+    # print(folder+label_file+sep+str(i)+EXT)
+    label = get_data_from_files(folder+label_file+sep+str(i)+ext, float)
     return label
 
 
@@ -52,11 +54,17 @@ def get_predicted(sep='', i=''):
     return label, predicted
 
 
-def get_data():
-    return get_value_from_file(FOLDER+DATA_FILE, DELI)
+def get_data_value(folder=FOLDER, data_file=DATA_FILE, deli=DELI):
+    return get_value_from_file(folder+data_file, deli)
 
 
-def get_data_and_train():
-    data = get_value_from_file(FOLDER+LEARN+DATA_FILE, DELI)
-    data_train = get_value_from_file(FOLDER+TEST+DATA_FILE, DELI)
+def get_data_raw(name='', folder=FOLDER, data_file=DATA_FILE):
+    return get_data_from_files(name or folder+data_file,
+                               lambda x: x)
+
+
+def get_data_and_train(folder=FOLDER, data_file=DATA_FILE, deli=DELI,
+                       learn=LEARN, test=TEST):
+    data = get_value_from_file(folder+learn+data_file, deli)
+    data_train = get_value_from_file(folder+test+data_file, deli)
     return data, data_train

@@ -7,29 +7,33 @@
 # author: JackRed <jackred@tuta.io>
 
 
-import csv
 import sys
-from os import mkdir
+from os import mkdir, listdir
+from helper import get_data_raw, DELI
 
-# IMG_SIZE = 48
+if len(sys.argv) > 3:
+    sys.exit('wrong argument')
 
+if len(sys.argv) >= 2:
+    if sys.argv[1].isdigit():
+        nb = int(sys.argv[1])
+    else:
+        exit('not a number')
+else:
+    nb = 50
 
-if (len(sys.argv) == 1):
-    sys.exit('toto')
+name = ''
+if len(sys.argv) == 3:
+    name = sys.argv[2]
 
+data = get_data_raw(name=name)
 
-with open(sys.argv[1]) as csvf:
-    sr = csv.reader(csvf, delimiter=',')
-    imgs = []
-    for row in sr:
-        imgs.append(row)
+if 'test' not in listdir('..'):
+    mkdir('../test')
 
-imgs.pop()
-
-mkdir('test')
-
-for j in range(len(imgs)):
-    with open('./test/test' + str(j) + '.ppm', 'w+') as f:
-        f.write('P3\n48 48 255\n')
-        f.write('\n'.join([str(int(float(i))) + ' ' + str(int(float(i))) + ' '
-                           + str(int(float(i))) for i in imgs[j]]))
+for j in range(nb):
+    with open('../test/test' + str(j) + '.ppm', 'w+') as f:
+        d = data[j].replace(DELI, '\n')
+        d = d.replace('.0', '')
+        f.write('P2\n48 48 255\n')
+        f.write(d)
