@@ -8,8 +8,7 @@
 
 from sklearn.cluster import KMeans
 from helper import get_data, get_label
-from numpy import array as np_array, logical_and as np_logical_and, \
-    unique as np_unique
+import numpy as np
 
 
 def main():
@@ -21,10 +20,10 @@ def main():
 
 
 def compare_class(kmeans):
-    unique, counts = np_unique(kmeans.labels_, return_counts=True)
+    unique, counts = np.unique(kmeans.labels_, return_counts=True)
     found = dict(zip(unique, counts))
     print('found: ', found)
-    label = np_array(get_label())
+    label = np.array(get_label())
     print('label loaded')
     size_one_class = [1410, 1860, 420, 1320, 2100, 2160, 780, 240, 2070, 300]
     for j in range(0, 9):
@@ -34,7 +33,7 @@ def compare_class(kmeans):
             print('kmeans: %d - label: %d' % (j, i))
             kj_class = kmeans.labels_ == j
             li_class = label == i
-            compare = np_logical_and(kj_class, li_class).sum()
+            compare = np.logical_and(kj_class, li_class).sum()
             percentage = (compare / size_one_class[i]) * 100
             print('good: %d out of %d | accuracy: %.2f%%' %
                   (compare, size_one_class[i], percentage))

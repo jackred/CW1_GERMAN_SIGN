@@ -8,7 +8,7 @@
 
 
 import sys
-from os import mkdir, listdir
+import os
 from helper import get_data_raw, DELI
 
 if len(sys.argv) > 3:
@@ -28,8 +28,8 @@ if len(sys.argv) == 3:
 
 data = get_data_raw(name=name)
 
-if 'test' not in listdir('..'):
-    mkdir('../test')
+if 'test' not in os.listdir('..'):
+    os.mkdir('../test')
 
 for j in range(nb):
     with open('../test/test' + str(j) + '.ppm', 'w+') as f:

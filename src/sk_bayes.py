@@ -10,6 +10,7 @@ import argparse
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, ComplementNB, \
     MultinomialNB
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
 import numpy as np
 from helper import get_label, get_data_value, SEP
 
@@ -22,55 +23,25 @@ NB = {
 }
 
 
-def print_line_matrix():
-    print('-' * (8 * 4 + 5))
+def print_line_matrix(lng):
+    print('-' * ((L+1) * (lng+1) + 1))
 
 
 def format_string(a):
     return str(a)[:L].center(L)
 
 
-def print_row_matrix(a, b, c, d):
-    print('|%s|%s|%s|%s|' % (format_string(a),
-                             format_string(b),
-                             format_string(c),
-                             format_string(d)))
+def format_row(l):
+    return '|'.join([format_string(i) for i in l])
 
 
-def print_matrix(i, fp, tp, fn, tn):
-    print_line_matrix()
-    print_row_matrix(i, 'FALSE', 'TRUE', '')
-    print_line_matrix()
-    print_row_matrix('Pos', fp, tp, fp+tp)
-    print_line_matrix()
-    print_row_matrix('Neg', fn, tn, fn+tn)
-    print_line_matrix()
-    print_row_matrix('', fp+fn, tp+tn, fp+tn+tp+fn)
-    print_line_matrix()
-
-
-def make_one_matrix(np_predicted, y_predicted, lb, i):
-    predicted_i = np_predicted == i
-    y_predicted_i = y_predicted == i
-    s_p_i = predicted_i.sum()
-    s_y_i = y_predicted_i.sum()
-    total = len(np_predicted)
-    a_s_p_i = total - s_p_i
-    # a_s_y_i = total - s_y_i
-    true_positive = np.logical_and(predicted_i, y_predicted_i).sum()
-    false_positive = s_y_i - true_positive
-    false_negative = s_p_i - true_positive
-    true_negative = a_s_p_i - false_positive
-    print_matrix(i, false_positive, true_positive, false_negative,
-                 true_negative)
-
-
-def make_matrix(np_predicted, y_predicted, lb):
-    if len(lb) == 2:
-        make_one_matrix(np_predicted, y_predicted, lb, 0)
-    else:
-        for i in lb:
-            make_one_matrix(np_predicted, y_predicted, lb, i)
+def print_matrix(m, lb):
+    print_line_matrix(len(lb))
+    print('|' + format_string('lb\pr') + '|'+format_row(lb)+'|')
+    print_line_matrix(len(lb))
+    for i in range(len(m)):
+        print('|' + format_string(lb[i]) + '|' + format_row(m[i]) + '|')
+        print_line_matrix(len(lb))
 
 
 def sk_bayes(fn, data, label, split, shuffle):
@@ -85,10 +56,9 @@ def sk_bayes(fn, data, label, split, shuffle):
                                                random_state=rand,
                                                test_size=split)
     y_predicted = nb.fit(data_train, label_train).predict(data_test)
-    mislabeled = (label_test != y_predicted).sum()
-    print('accuracy: %.3f%%' % ((1 - (mislabeled / len(data_train))) * 100))
     lb = np.unique(label)
-    make_matrix(label_test, y_predicted, lb)
+    matrix = confusion_matrix(label_test, y_predicted)
+    print_matrix(matrix, lb)
 
 
 def bayes(name_nb, fn_label, data, split, shuffle):
