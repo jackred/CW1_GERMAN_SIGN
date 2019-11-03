@@ -24,7 +24,7 @@ NB = {
 
 
 def print_line_matrix(lng):
-    print('-' * ((L+1) * (lng+1) + 1))
+    print('-' * ((L+1) * (lng+2) + 1))
 
 
 def format_string(a):
@@ -37,11 +37,17 @@ def format_row(l):
 
 def print_matrix(m, lb):
     print_line_matrix(len(lb))
-    print('|' + format_string('lb\pr') + '|'+format_row(lb)+'|')
+    print('|' + format_string('lb\pr') + '|' + format_row(lb) + '|'
+          + format_string('total') + '|')
     print_line_matrix(len(lb))
     for i in range(len(m)):
-        print('|' + format_string(lb[i]) + '|' + format_row(m[i]) + '|')
+        print('|' + format_string(lb[i]) + '|' + format_row(m[i]) + '|'
+              + format_string(sum(m[i])) + '|')
         print_line_matrix(len(lb))
+    print('|' + format_string('total') + '|'
+          + format_row(sum(m)) + '|'
+          + format_string(m.sum()) + '|')
+    print_line_matrix(len(lb))
 
 
 def sk_bayes(fn, data, label, split, shuffle):
