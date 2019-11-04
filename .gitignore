@@ -114,3 +114,5 @@ venv.bak/
 # data
 data
 test
+# img
+*.ppm

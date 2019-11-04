@@ -9,7 +9,7 @@
 
 import sys
 import os
-from helper import get_data_raw, DELI
+from helper import get_data_raw, from_csv_to_ppm_raw, create_image
 
 if len(sys.argv) > 3:
     sys.exit('wrong argument')
@@ -31,9 +31,7 @@ data = get_data_raw(name=name)
 if 'test' not in os.listdir('..'):
     os.mkdir('../test')
 
+
 for j in range(nb):
-    with open('../test/test' + str(j) + '.ppm', 'w+') as f:
-        d = data[j].replace(DELI, '\n')
-        d = d.replace('.0', '')
-        f.write('P2\n48 48 255\n')
-        f.write(d)
+    d = from_csv_to_ppm_raw(data[j])
+    create_image('../test/test' + str(j) + '.ppm', d)

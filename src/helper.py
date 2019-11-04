@@ -34,6 +34,7 @@ def get_value_from_file(name_data, deli):
     return data
 
 
+# give label as numpy array of integer
 def get_label(sep='', i='', name='', folder=FOLDER, label_file=LABEL_FILE,
               ext=EXT):
     # print(folder+label_file+sep+str(i)+EXT)
@@ -42,33 +43,39 @@ def get_label(sep='', i='', name='', folder=FOLDER, label_file=LABEL_FILE,
     return label
 
 
-def get_labels(sep='', i='', name='', folder=FOLDER, label_file=LABEL_FILE,
-               ext=EXT):
-    label = get_label(sep, i, name, folder, label_file, ext)
-    return label, label
-
-
-def get_predicted(sep='', i=''):
-    # print(FOLDER+LEARN+LABEL_FILE+sep+str(i)+EXT,
-    #       FOLDER+TEST+LABEL_FILE+sep+str(i)+EXT)
-    label = get_data_from_files(FOLDER+LEARN+LABEL_FILE+sep+str(i)+EXT,
-                                float)
-    predicted = get_data_from_files(FOLDER+TEST+LABEL_FILE+sep+str(i)+EXT,
-                                    float)
-    return label, predicted
-
-
+# give data as numpy array of integer
 def get_data_value(name='', folder=FOLDER, data_file=DATA_FILE, deli=DELI):
     return get_value_from_file(name or folder+data_file, deli)
 
 
+# give data as numpy of string (one cell = one row)
 def get_data_raw(name='', folder=FOLDER, data_file=DATA_FILE):
     return get_data_from_files(name or folder+data_file,
                                lambda x: x)
 
 
-def get_data_and_train(folder=FOLDER, data_file=DATA_FILE, deli=DELI,
-                       learn=LEARN, test=TEST):
-    data = get_value_from_file(folder+learn+data_file, deli)
-    data_train = get_value_from_file(folder+test+data_file, deli)
-    return data, data_train
+def create_image(name, d, w, h):
+    with open(name, 'w+') as f:
+        f.write('P2\n%d %d 255\n' % (w, h))
+        f.write(d)
+
+
+# convert an array of integer to a ppm stirng
+# ex: [1.0, 2.0, 9.4] => '1\n2\n9\n'
+def convert_ppm_raw(row):
+    return '\n'.join([str(int(round(i))) for i in row])+'\n'
+
+
+# convert csv data to ppm string
+# ex: '1.0,5.0,255.0' => '1\n5\n255'
+def from_csv_to_ppm_raw(row):
+    return row.replace(DELI, '\n').replace('.0', '')+'\n'
+
+
+# create an image of name 'name' (extension must be wrote)
+# format ppm 2 (P2)
+# from the row given
+def create_image_from_row(name, row):
+    s = convert_ppm_raw(row)
+    wh = len(row) ** (1/2)
+    create_image(name, s, wh, wh)

@@ -13,6 +13,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 import numpy as np
 from helper import get_label, get_data_value, SEP
+from preprocess import split_data
 
 L = 8
 NB = {
@@ -50,33 +51,28 @@ def print_matrix(m, lb):
     print_line_matrix(len(lb))
 
 
-def sk_bayes(fn, data, label, split, shuffle):
+def sk_bayes(fn, data_train, label_train, data_test, label_test):
     nb = fn()
-    rand = np.random.randint(10000000)
-    data_train, data_test = train_test_split(data,
-                                             shuffle=shuffle,
-                                             random_state=rand,
-                                             test_size=split)
-    label_train, label_test = train_test_split(label,
-                                               shuffle=shuffle,
-                                               random_state=rand,
-                                               test_size=split)
     y_predicted = nb.fit(data_train, label_train).predict(data_test)
-    lb = np.unique(label)
+    lb = np.unique(label_train)
     matrix = confusion_matrix(label_test, y_predicted)
     print_matrix(matrix, lb)
 
 
 def bayes(name_nb, fn_label, data, split, shuffle):
-    label = fn_label()
+    rand = np.random.randint(10000000)
+    data_train, data_test = split_data(data, split, shuffle, rand)
+    label_train, label_test = split_data(fn_label(), split, shuffle, rand)
     print('using all class')
     print('****%s****' % NB[name_nb]['name'])
-    sk_bayes(NB[name_nb]['fn'], data, label, split, shuffle)
+    sk_bayes(NB[name_nb]['fn'], data_train, label_train, data_test, label_test)
     for i in range(10):
         print('=======')
-        label = fn_label(sep=SEP, i=i)
+        label_train, label_test = split_data(fn_label(sep=SEP, i=i), split,
+                                             shuffle, rand)
         print('class %d' % i)
-        sk_bayes(NB[name_nb]['fn'], data, label, split, shuffle)
+        sk_bayes(NB[name_nb]['fn'], data_train, label_train, data_test,
+                 label_test)
 
 
 def parse_args():
