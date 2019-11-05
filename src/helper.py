@@ -7,7 +7,7 @@
 # author: JackRed <jackred@tuta.io>
 
 import numpy as np
-
+import preprocess
 
 DELI = ','
 FOLDER = '../data/random/'
@@ -79,3 +79,26 @@ def create_image_from_row(name, row):
     s = convert_ppm_raw(row)
     wh = len(row) ** (1/2)
     create_image(name, s, wh, wh)
+
+
+def pre_processed_file(file_value, option, rand=0):
+    if option.split is not None:
+        file_value, file_value_test = preprocess.split_data(file_value,
+                                                            option.split,
+                                                            option.randomize,
+                                                            rand)
+    else:
+        file_value_test = file_value
+    return file_value, file_value_test
+
+
+def pre_processed_data(option, rand):
+    data = get_data_value(name=option.folder + option.data)
+    if option.size is not None:
+        data = preprocess.resize_batch(data, option.size)
+    return pre_processed_file(data, option)
+
+
+def pre_processed_label(option, rand, sep='', i=''):
+    label = get_label(sep=sep, i=i, name=option.folder + option.label)
+    return pre_processed_file(label, option)

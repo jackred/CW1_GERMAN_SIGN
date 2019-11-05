@@ -6,13 +6,12 @@
 
 # author: JackRed <jackred@tuta.io>
 
-import argparse
+from arg import bayes_args
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, ComplementNB, \
     MultinomialNB
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 import numpy as np
-from helper import get_label, get_data_value, SEP
+from helper import pre_processed_data, pre_processed_label, SEP
 from preprocess import split_data
 
 L = 8
@@ -59,40 +58,26 @@ def sk_bayes(fn, data_train, label_train, data_test, label_test):
     print_matrix(matrix, lb)
 
 
-def bayes(name_nb, fn_label, data, split, shuffle):
-    rand = np.random.randint(10000000)
-    data_train, data_test = split_data(data, split, shuffle, rand)
-    label_train, label_test = split_data(fn_label(), split, shuffle, rand)
+def bayes(name_nb, fn_label, data_train, data_test):
+    label_train, label_test = fn_label()
     print('using all class')
     print('****%s****' % NB[name_nb]['name'])
     sk_bayes(NB[name_nb]['fn'], data_train, label_train, data_test, label_test)
     for i in range(10):
         print('=======')
-        label_train, label_test = split_data(fn_label(sep=SEP, i=i), split,
-                                             shuffle, rand)
+        label_train, label_test = fn_label(sep=SEP, i=i)
         print('class %d' % i)
         sk_bayes(NB[name_nb]['fn'], data_train, label_train, data_test,
                  label_test)
 
 
-def parse_args():
-    argp = argparse.ArgumentParser('sklearn bayes')
-    argp.add_argument('-r', dest='randomize', default=False,
-                      action='store_true')
-    argp.add_argument('-s', dest='split', type=float, default=1)
-    argp.add_argument('-d', dest='data', default='')
-    argp.add_argument('-l', dest='label', default='')
-    argp.add_argument('-f', dest='folder', default='')
-    argp.add_argument('-b', dest='bayes', required=True)
-    return argp.parse_args()
-
-
 if __name__ == '__main__':
-    args = parse_args()
-    data = get_data_value(name=args.folder + args.data)
+    args = bayes_args()
+    rand = np.random.randint(10000000)
+    data_train, data_test = pre_processed_data(args, rand)
     bayes(name_nb=args.bayes,
           fn_label=lambda sep='', i='':
-          get_label(sep=sep, i=i, name=args.folder + args.label),
-          data=data,
-          split=args.split,
-          shuffle=args.randomize)
+          pre_processed_label(option=args, rand=rand,
+                              sep=sep, i=i),
+          data_train=data_train,
+          data_test=data_test)
