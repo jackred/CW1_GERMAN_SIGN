@@ -9,10 +9,9 @@
 from arg import bayes_args
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, ComplementNB, \
     MultinomialNB
-from sklearn.metrics import confusion_matrix
 import numpy as np
-from helper import pre_processed_data, pre_processed_label, SEP
-from preprocess import split_data
+from helper import pre_processed_data, pre_processed_label, SEP, \
+    matrix_confusion
 
 L = 8
 NB = {
@@ -23,39 +22,11 @@ NB = {
 }
 
 
-def print_line_matrix(lng):
-    print('-' * ((L+1) * (lng+2) + 1))
-
-
-def format_string(a):
-    return str(a)[:L].center(L)
-
-
-def format_row(l):
-    return '|'.join([format_string(i) for i in l])
-
-
-def print_matrix(m, lb):
-    print_line_matrix(len(lb))
-    print('|' + format_string('lb\pr') + '|' + format_row(lb) + '|'
-          + format_string('total') + '|')
-    print_line_matrix(len(lb))
-    for i in range(len(m)):
-        print('|' + format_string(lb[i]) + '|' + format_row(m[i]) + '|'
-              + format_string(sum(m[i])) + '|')
-        print_line_matrix(len(lb))
-    print('|' + format_string('total') + '|'
-          + format_row(sum(m)) + '|'
-          + format_string(m.sum()) + '|')
-    print_line_matrix(len(lb))
-
-
 def sk_bayes(fn, data_train, label_train, data_test, label_test):
     nb = fn()
     y_predicted = nb.fit(data_train, label_train).predict(data_test)
     lb = np.unique(label_train)
-    matrix = confusion_matrix(label_test, y_predicted)
-    print_matrix(matrix, lb)
+    matrix_confusion(label_test, y_predicted, lb)
 
 
 def bayes(name_nb, fn_label, data_train, data_test):

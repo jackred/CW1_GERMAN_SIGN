@@ -8,6 +8,8 @@
 
 import numpy as np
 import preprocess
+from sklearn.metrics import confusion_matrix
+
 
 DELI = ','
 FOLDER = '../data/random/'
@@ -17,6 +19,7 @@ SEP = '_'
 TEST = 'test' + SEP
 LEARN = 'learn' + SEP
 EXT = '.csv'
+L = 8
 
 
 def get_data_from_files(name, fn):
@@ -102,3 +105,36 @@ def pre_processed_data(option, rand):
 def pre_processed_label(option, rand, sep='', i=''):
     label = get_label(sep=sep, i=i, name=option.folder + option.label)
     return pre_processed_file(label, option)
+
+
+def print_line_matrix(lng):
+    print('-' * ((L+1) * (lng+2) + 1))
+
+
+def format_string(a):
+    return str(a)[:L].center(L)
+
+
+def format_row(l):
+    return '|'.join([format_string(i) for i in l])
+
+
+def print_matrix(m, lb):
+    print_line_matrix(len(lb))
+    print('|' + format_string('lb\pr') + '|' + format_row(lb) + '|'
+          + format_string('total') + '|')
+    print_line_matrix(len(lb))
+    for i in range(len(m)):
+        print('|' + format_string(lb[i]) + '|' + format_row(m[i]) + '|'
+              + format_string(sum(m[i])) + '|')
+        print_line_matrix(len(lb))
+    print('|' + format_string('total') + '|'
+          + format_row(sum(m)) + '|'
+          + format_string(m.sum()) + '|')
+    print_line_matrix(len(lb))
+
+
+# create and print confusion_matrix
+def matrix_confusion(label, predicted, lb):
+    matrix = confusion_matrix(label, predicted)
+    print_matrix(matrix, lb)

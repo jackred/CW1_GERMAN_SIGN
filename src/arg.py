@@ -25,3 +25,8 @@ def bayes_args():
     argp = parse_args('sk_learn naive bayes')
     argp.add_argument('-b', dest='bayes', required=True)
     return argp.parse_args()
+
+
+def kmeans_args():
+    argp = parse_args('sk_learn kmeans')
+    return argp.parse_args()
