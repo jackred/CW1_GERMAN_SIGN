@@ -7,31 +7,24 @@
 # author: JackRed <jackred@tuta.io>
 
 
-import sys
-import os
-from helper import get_data_raw, from_csv_to_ppm_raw, create_image
+import arg
+import helper
+import random
+import preprocess
 
-if len(sys.argv) > 3:
-    sys.exit('wrong argument')
-
-if len(sys.argv) >= 2:
-    if sys.argv[1].isdigit():
-        nb = int(sys.argv[1])
-    else:
-        exit('not a number')
-else:
-    nb = 50
-
-name = ''
-if len(sys.argv) == 3:
-    name = sys.argv[2]
-
-data = get_data_raw(name=name)
-
-if 'test' not in os.listdir('..'):
-    os.mkdir('../test')
+IMG_FOLDER = '../data/img/'
 
 
-for j in range(nb):
-    d = from_csv_to_ppm_raw(data[j])
-    create_image('../test/test' + str(j) + '.ppm', d)
+def main():
+    args = arg.preprocess_args()
+    rand = 0
+    data, _ = helper.pre_processed_data(args, rand, dry=False)
+    if args.mean:
+        rand = random.randint(0, 9999999)
+        label, _ = helper.pre_processed_label(args, rand, dry=False)
+        data = preprocess.mean_image(label, data)
+    helper.create_images_from_rows(IMG_FOLDER + (args.name or 'img'), data)
+
+
+if __name__ == '__main__':
+    main()
