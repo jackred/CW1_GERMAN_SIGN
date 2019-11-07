@@ -136,8 +136,6 @@ if __name__ == '__main__':
 		total += 1
 		if testlabel[i] == kmeans.find_nearest_cluster(testdata[i]):
 			right += 1
-		#print(testlabel[i], " - ", kmeans.find_nearest_cluster(testdata[i]))
-
 		print("Accuracy : ", round((right / total) * 100, 3), " %")
 
 
