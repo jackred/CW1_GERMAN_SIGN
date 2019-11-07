@@ -14,9 +14,10 @@ def parse_args(name):
     argp.add_argument('-r', dest='randomize', default=False,
                       action='store_true')
     argp.add_argument('-s', dest='split', type=float)
-    argp.add_argument('-d', dest='data', default='')
-    argp.add_argument('-l', dest='label', default='')
-    argp.add_argument('-f', dest='folder', default='')
+    argp.add_argument('-g', dest='segment', type=int)
+    argp.add_argument('-d', dest='data')
+    argp.add_argument('-l', dest='label')
+    argp.add_argument('-f', dest='folder')
     argp.add_argument('-z', dest='size', type=int)
     return argp
 
@@ -29,4 +30,18 @@ def bayes_args():
 
 def kmeans_args():
     argp = parse_args('sk_learn kmeans')
+    argp.add_argument('-i', dest='init', default='k',
+                      help='k: kmeans++ | m: mean | r: random')
+    return argp.parse_args()
+
+
+def bayes_net_args():
+    argp = parse_args('bayes network')
+    return argp.parse_args()
+
+
+def preprocess_args():
+    argp = parse_args('preprocessing')
+    argp.add_argument('-n', dest='name', default='')
+    argp.add_argument('-m', dest='mean', default=False, action='store_true')
     return argp.parse_args()

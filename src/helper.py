@@ -22,6 +22,18 @@ EXT = '.csv'
 L = 8
 
 
+####
+# WRITE DATA
+####
+def write_data_to_file(name, data, fmt='%.3f', h=''):
+    # print(name)
+    # print(data.shape)
+    np.savetxt(name, data, delimiter=',', fmt=fmt, header=h, comments='')
+
+
+####
+# READ DATA
+####
 def get_data_from_files(name, fn):
     res = []
     with open(name) as f:
@@ -38,29 +50,35 @@ def get_value_from_file(name_data, deli):
 
 
 # give label as numpy array of integer
-def get_label(sep='', i='', name='', folder=FOLDER, label_file=LABEL_FILE,
+def get_label(sep='', i='', folder=FOLDER, label_file=LABEL_FILE,
               ext=EXT):
-    # print(folder+label_file+sep+str(i)+EXT)
-    label = get_data_from_files((name or folder+label_file)+sep+str(i)+ext,
+    folder = folder or FOLDER
+    label_file = label_file or LABEL_FILE
+    label = get_data_from_files((folder+label_file)+sep+str(i)+ext,
                                 int)
     return label
 
 
 # give data as numpy array of integer
-def get_data_value(name='', folder=FOLDER, data_file=DATA_FILE, deli=DELI):
-    return get_value_from_file(name or folder+data_file, deli)
+def get_data_value(folder=FOLDER, data_file=DATA_FILE, deli=DELI):
+    folder = folder or FOLDER
+    data_file = data_file or DATA_FILE
+    return get_value_from_file(folder+data_file, deli)
 
 
 # give data as numpy of string (one cell = one row)
-def get_data_raw(name='', folder=FOLDER, data_file=DATA_FILE):
-    return get_data_from_files(name or folder+data_file,
-                               lambda x: x)
+def get_data_raw(folder=FOLDER, data_file=DATA_FILE):
+        folder = folder or FOLDER
+        data_file = data_file or DATA_FILE
+        return get_data_from_files(folder+data_file,
+                                   lambda x: x)
 
 
+####
+# CREATE IMAGE
+####
 def create_image(name, d, w, h):
-    with open(name, 'w+') as f:
-        f.write('P2\n%d %d 255\n' % (w, h))
-        f.write(d)
+    write_data_to_file(name, d, fmt='%d', h='P2\n%d %d 255\n' % (w, h))
 
 
 # convert an array of integer to a ppm stirng
@@ -75,15 +93,31 @@ def from_csv_to_ppm_raw(row):
     return row.replace(DELI, '\n').replace('.0', '')+'\n'
 
 
-# create an image of name 'name' (extension must be wrote)
-# format ppm 2 (P2)
-# from the row given
-def create_image_from_row(name, row):
-    s = convert_ppm_raw(row)
-    wh = len(row) ** (1/2)
-    create_image(name, s, wh, wh)
+def from_row_to_csv(row):
+    return ', '.join(str(i) for i in row)+'\n'
 
 
+def from_rows_to_csv(rows):
+    return [from_row_to_csv(i) for i in rows]
+
+
+def create_images_from_rows(name, rows):
+    for i in range(len(rows)):
+        wh = len(rows[i]) ** (1/2)
+        create_image('%s%i.ppm' % (name, i), rows[i], wh, wh)
+
+
+####
+# UTILITY
+####
+def print_dry(m, dry):
+    if not dry:
+        print(m)
+
+
+####
+# PREPROCESSING
+####
 def pre_processed_file(file_value, option, rand=0):
     if option.split is not None:
         file_value, file_value_test = preprocess.split_data(file_value,
@@ -95,18 +129,28 @@ def pre_processed_file(file_value, option, rand=0):
     return file_value, file_value_test
 
 
-def pre_processed_data(option, rand):
-    data = get_data_value(name=option.folder + option.data)
+def pre_processed_data(option, rand, dry=True):
+    data = get_data_value(folder=option.folder, data_file=option.data)
+    print_dry('data loaded', dry)
     if option.size is not None:
         data = preprocess.resize_batch(data, option.size)
-    return pre_processed_file(data, option)
+        print_dry('data resized', dry)
+    if option.segment is not None:
+        data = preprocess.old_segment_images(data, option.segment)
+        print_dry('data ', dry)
+    return pre_processed_file(data, option, rand)
 
 
-def pre_processed_label(option, rand, sep='', i=''):
-    label = get_label(sep=sep, i=i, name=option.folder + option.label)
-    return pre_processed_file(label, option)
+def pre_processed_label(option, rand, sep='', i='', dry=True):
+    label = get_label(sep=sep, i=i, folder=option.folder,
+                      label_file=option.label)
+    print_dry('label loaded', dry)
+    return pre_processed_file(label, option, rand)
 
 
+####
+# MATRIX PRINTING
+####
 def print_line_matrix(lng):
     print('-' * ((L+1) * (lng+2) + 1))
 

@@ -9,22 +9,25 @@
 from arg import kmeans_args
 from sklearn.cluster import KMeans
 from helper import pre_processed_data, pre_processed_label, matrix_confusion, \
-    create_image_from_row
+    create_images_from_rows
 import numpy as np
+from preprocess import mean_image
 
 
 def main():
     args = kmeans_args()
     rand = np.random.randint(10000000)
     data_train, data_test = pre_processed_data(args, rand)
-    _, label_test = pre_processed_label(args, rand)
+    label_train, label_test = pre_processed_label(args, rand)
     print('data loaded')
-    kmeans = KMeans(n_clusters=10, random_state=0).fit(data_train)
+    switch_choice = {'k': lambda: 'k-means++', 'r': lambda: 'random',
+                     'm': lambda: mean_image(label_train, data_train)}
+    kmeans = KMeans(n_clusters=10, random_state=0,
+                    init=switch_choice[args.init]()).fit(data_train)
     predicted = kmeans.predict(data_test)
     print('kmeans done')
     compare_class(predicted, label_test)
-    for i in range(len(kmeans.cluster_centers_)):
-        create_image_from_row('res%d.ppm' % i, kmeans.cluster_centers_[i])
+    create_images_from_rows('km', kmeans.cluster_centers_)
 
 
 def compare_class(predicted, label):
@@ -34,7 +37,7 @@ def compare_class(predicted, label):
     label_nb = dict(zip(unique_l, counts_l))
     print('found: ', found)
     print('label: ', label_nb)
-    #matrix_confusion(label, predicted, unique_l)
+    matrix_confusion(label, predicted, unique_l)
     # for j in range(0, len(unique_l)):
     #     predicted = (predicted + 1) % len(unique_l)
     #     matrix_confusion(label, predicted, unique_l)

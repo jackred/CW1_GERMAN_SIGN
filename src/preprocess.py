@@ -8,6 +8,8 @@
 
 from sklearn.model_selection import train_test_split
 import cv2
+import numpy as np
+from sklearn.cluster import KMeans
 
 
 def split_data(data, train_size=0.7, shuffle=False, random_state=0):
@@ -29,4 +31,22 @@ def resize_img_square(row, l):
 
 
 def resize_batch(b, d):
-    return [resize_img_square(i, d) for i in b]
+    return np.array([resize_img_square(i, d) for i in b])
+
+
+def mean_image(label, data):
+    return [x.sum(axis=0) / len(x) for x in
+            [data[label == i] for i in np.unique(label)]]
+
+
+def old_segment(image, n_c):
+    kmeans = KMeans(n_clusters=n_c, random_state=0).fit(image.reshape(-1, 1))
+    return kmeans.labels_ * (255/n_c)
+
+
+def old_segment_images(rows, n_c):
+    return np.array([old_segment(i, n_c) for i in rows])
+
+
+# def segment(image, n_t):
+#     pass
