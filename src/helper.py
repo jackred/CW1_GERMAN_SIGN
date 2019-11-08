@@ -34,19 +34,8 @@ def write_data_to_file(name, data, fmt='%.3f', h=''):
 ####
 # READ DATA
 ####
-def get_data_from_files(name, fn):
-    res = []
-    with open(name) as f:
-        f.readline()  # ignore header
-        for line in f:
-            res.append(fn(line))
-    return np.array(res)
-
-
-def get_value_from_file(name_data, deli):
-    data = get_data_from_files(name_data,
-                               lambda x: [float(i) for i in x.split(deli)])
-    return data
+def get_data_from_file(name, deli=DELI):
+    return np.loadtxt(name, delimiter=deli, skiprows=1)
 
 
 # give label as numpy array of integer
@@ -54,24 +43,22 @@ def get_label(sep='', i='', folder=FOLDER, label_file=LABEL_FILE,
               ext=EXT):
     folder = folder or FOLDER
     label_file = label_file or LABEL_FILE
-    label = get_data_from_files((folder+label_file)+sep+str(i)+ext,
-                                int)
+    label = get_data_from_file((folder+label_file)+sep+str(i)+ext)
     return label
 
 
 # give data as numpy array of integer
-def get_data_value(folder=FOLDER, data_file=DATA_FILE, deli=DELI):
+def get_data(folder=FOLDER, data_file=DATA_FILE, deli=DELI):
     folder = folder or FOLDER
     data_file = data_file or DATA_FILE
-    return get_value_from_file(folder+data_file, deli)
+    return get_data_from_file(folder+data_file, deli)
 
 
 # give data as numpy of string (one cell = one row)
 def get_data_raw(folder=FOLDER, data_file=DATA_FILE):
         folder = folder or FOLDER
         data_file = data_file or DATA_FILE
-        return get_data_from_files(folder+data_file,
-                                   lambda x: x)
+        return np.genfromtxt(folder+data_file, dtype='str', skip_header=1)
 
 
 ####
@@ -130,7 +117,7 @@ def pre_processed_file(file_value, option, rand=0):
 
 
 def pre_processed_data(option, rand, dry=True):
-    data = get_data_value(folder=option.folder, data_file=option.data)
+    data = get_data(folder=option.folder, data_file=option.data)
     print_dry('data loaded', dry)
     if option.size is not None:
         data = preprocess.resize_batch(data, option.size)
