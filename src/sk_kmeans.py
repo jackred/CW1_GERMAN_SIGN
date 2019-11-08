@@ -27,7 +27,8 @@ def main():
     predicted = kmeans.predict(data_test)
     print('kmeans done')
     compare_class(predicted, label_test)
-    create_images_from_rows('km', kmeans.cluster_centers_)
+    if args.create_mean:
+        create_images_from_rows('km', kmeans.cluster_centers_)
 
 
 def compare_class(predicted, label):

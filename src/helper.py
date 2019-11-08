@@ -15,6 +15,7 @@ DELI = ','
 FOLDER = '../data/random/'
 DATA_FILE = 'r_x_train_gr_smpl.csv'
 LABEL_FILE = 'r_y_train_smpl'
+IMG_FOLDER = '../data/img/'
 SEP = '_'
 TEST = 'test' + SEP
 LEARN = 'learn' + SEP
@@ -91,7 +92,7 @@ def from_rows_to_csv(rows):
 def create_images_from_rows(name, rows):
     for i in range(len(rows)):
         wh = len(rows[i]) ** (1/2)
-        create_image('%s%i.ppm' % (name, i), rows[i], wh, wh)
+        create_image(IMG_FOLDER+'%s%i.ppm' % (name, i), rows[i], wh, wh)
 
 
 ####

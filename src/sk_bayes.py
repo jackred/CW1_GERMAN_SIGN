@@ -11,7 +11,8 @@ from sklearn.naive_bayes import GaussianNB, BernoulliNB, ComplementNB, \
     MultinomialNB
 import numpy as np
 from helper import pre_processed_data, pre_processed_label, SEP, \
-    matrix_confusion
+    matrix_confusion, create_images_from_rows
+from preprocess import mean_image
 
 L = 8
 NB = {
@@ -27,19 +28,26 @@ def sk_bayes(fn, data_train, label_train, data_test, label_test):
     y_predicted = nb.fit(data_train, label_train).predict(data_test)
     lb = np.unique(label_train)
     matrix_confusion(label_test, y_predicted, lb)
+    return data_test, y_predicted
 
 
-def bayes(name_nb, fn_label, data_train, data_test):
+def bayes(name_nb, fn_label, data_train, data_test, cm):
     label_train, label_test = fn_label()
     print('using all class')
     print('****%s****' % NB[name_nb]['name'])
-    sk_bayes(NB[name_nb]['fn'], data_train, label_train, data_test, label_test)
+    res = []
+    res.append(sk_bayes(NB[name_nb]['fn'], data_train, label_train, data_test,
+                        label_test))
     for i in range(10):
         print('=======')
         label_train, label_test = fn_label(sep=SEP, i=i)
         print('class %d' % i)
-        sk_bayes(NB[name_nb]['fn'], data_train, label_train, data_test,
-                 label_test)
+        res.append(sk_bayes(NB[name_nb]['fn'], data_train, label_train,
+                            data_test, label_test))
+    if cm:
+        for i in range(len(res)):
+            create_images_from_rows('%d_b' % i,
+                                    mean_image(res[i][1], res[i][0]))
 
 
 if __name__ == '__main__':
@@ -51,4 +59,5 @@ if __name__ == '__main__':
           pre_processed_label(option=args, rand=rand,
                               sep=sep, i=i),
           data_train=data_train,
-          data_test=data_test)
+          data_test=data_test,
+          cm=args.create_mean)
