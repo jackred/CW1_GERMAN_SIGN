@@ -77,7 +77,8 @@ class KMEANS:
 				""" For every pixel of the image """
 				for z in range(len(self.data[0])):
 					""" class += (pval(y, z) - val(i, z) """
-					tmp[y] += (self.clusters[y].dimensions[z] - self.data[i][z]) ** 2
+					#tmp[y] += (self.clusters[y].dimensions[z] - self.data[i][z]) ** 2
+					tmp[y] += 255 * (1 / (self.clusters[y].dimensions[z] - self.data[i][z]))
 			max = tmp[0]
 			id = 0
 			for y in range(self.nbclass):
@@ -114,7 +115,7 @@ if __name__ == '__main__':
 	kmeans = KMEANS(data, 10, label)
 
 	print("Main Loop:")
-	for i in range(10):
+	"""for i in range(10):
 		print(i)
 		print("E:")
 		kmeans.E()
@@ -129,7 +130,7 @@ if __name__ == '__main__':
 		for elem in kmeans.data_affiliation:
 			tmp[elem] += 1
 		print(tmp)
-
+"""
 	total = 0
 	right = 0
 	for i in range(len(testdata)):
