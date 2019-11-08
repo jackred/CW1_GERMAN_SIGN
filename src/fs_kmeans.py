@@ -115,7 +115,7 @@ if __name__ == '__main__':
 	kmeans = KMEANS(data, 10, label)
 
 	print("Main Loop:")
-	"""for i in range(10):
+	for i in range(10):
 		print(i)
 		print("E:")
 		kmeans.E()
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 		for elem in kmeans.data_affiliation:
 			tmp[elem] += 1
 		print(tmp)
-"""
+
 	total = 0
 	right = 0
 	for i in range(len(testdata)):
