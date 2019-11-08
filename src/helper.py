@@ -35,8 +35,8 @@ def write_data_to_file(name, data, fmt='%.3f', h=''):
 ####
 # READ DATA
 ####
-def get_data_from_file(name, deli=DELI):
-    return np.loadtxt(name, delimiter=deli, skiprows=1)
+def get_data_from_file(name, deli=DELI, dtype=float):
+    return np.loadtxt(name, delimiter=deli, skiprows=1, dtype=dtype)
 
 
 # give label as numpy array of integer
@@ -44,7 +44,7 @@ def get_label(sep='', i='', folder=FOLDER, label_file=LABEL_FILE,
               ext=EXT):
     folder = folder or FOLDER
     label_file = label_file or LABEL_FILE
-    label = get_data_from_file((folder+label_file)+sep+str(i)+ext)
+    label = get_data_from_file((folder+label_file)+sep+str(i)+ext, dtype=int)
     return label
 
 
@@ -120,6 +120,8 @@ def pre_processed_file(file_value, option, rand=0):
 def pre_processed_data(option, rand, dry=True):
     data = get_data(folder=option.folder, data_file=option.data)
     print_dry('data loaded', dry)
+    # if option.equalize_histogram:
+    #     data = preprocess.equalize_histograms(data)
     if option.histogram:
         data = preprocess.adjust_histograms(data)
     if option.size is not None:
