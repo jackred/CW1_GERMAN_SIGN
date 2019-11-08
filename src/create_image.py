@@ -21,7 +21,7 @@ def main():
         rand = random.randint(0, 9999999)
         label, _ = helper.pre_processed_label(args, rand, dry=False)
         data = preprocess.mean_image(label, data)
-    helper.create_images_from_rows(helper.IMG_FOLDER + (args.name or 'img'),
+    helper.create_images_from_rows((args.name or 'img'),
                                    data)
 
 
