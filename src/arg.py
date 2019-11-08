@@ -20,6 +20,9 @@ def float_or_int(i):
         raise argparse.ArgumentTypeError(msg)
 
 
+FILTER_LIST = ['m', 's', 'f', 'h']
+
+
 def parse_args(name):
     argp = argparse.ArgumentParser(name)
     argp.add_argument('-r', dest='randomize', default=False,
@@ -32,12 +35,21 @@ def parse_args(name):
     argp.add_argument('-z', dest='size', type=int)
     argp.add_argument('-hi', dest='histogram', default=False,
                       action='store_true')
+    argp.add_argument('-eh', dest='equalize', default=False,
+                      action='store_true')
+    argp.add_argument('-bin', dest='binarise', default=False,
+                      action='store_true')
+    # argp.add_argument('-fi', dest='filters', choices=FILTER_LIST)
     return argp
+
+
+BAYES_LIST = ['gnb', 'cnb', 'bnb', 'mnb']
 
 
 def bayes_args():
     argp = parse_args('sk_learn naive bayes')
-    argp.add_argument('-b', dest='bayes', required=True)
+    argp.add_argument('-b', dest='bayes', required=True,
+                      choices=BAYES_LIST)
     argp.add_argument('-cm', dest='create_mean', default=False,
                       action='store_true')
     return argp.parse_args()
