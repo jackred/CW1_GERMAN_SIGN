@@ -120,6 +120,8 @@ def pre_processed_file(file_value, option, rand=0):
 def pre_processed_data(option, rand, dry=True):
     data = get_data(folder=option.folder, data_file=option.data)
     print_dry('data loaded', dry)
+    if option.histogram:
+        data = preprocess.adjust_histograms(data)
     if option.size is not None:
         data = preprocess.resize_batch(data, option.size)
         print_dry('data resized', dry)

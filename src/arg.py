@@ -9,16 +9,29 @@
 import argparse
 
 
+def float_or_int(i):
+    n = float(i)
+    if n >= 1:
+        return int(i)
+    elif n > 0 and n < 1:
+        return n
+    else:
+        msg = 'Not a float in range(0,1) or a integer > 0'
+        raise argparse.ArgumentTypeError(msg)
+
+
 def parse_args(name):
     argp = argparse.ArgumentParser(name)
     argp.add_argument('-r', dest='randomize', default=False,
                       action='store_true')
-    argp.add_argument('-s', dest='split', type=float)
+    argp.add_argument('-s', dest='split', type=float_or_int)
     argp.add_argument('-g', dest='segment', type=int)
     argp.add_argument('-d', dest='data')
     argp.add_argument('-l', dest='label')
     argp.add_argument('-f', dest='folder')
     argp.add_argument('-z', dest='size', type=int)
+    argp.add_argument('-hi', dest='histogram', default=False,
+                      action='store_true')
     return argp
 
 

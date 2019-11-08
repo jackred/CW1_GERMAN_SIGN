@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 import cv2
 import numpy as np
 from sklearn.cluster import KMeans
+from skimage.exposure import match_histograms
 
 
 def split_data(data, train_size=0.7, shuffle=False, random_state=0):
@@ -39,6 +40,10 @@ def mean_image(label, data):
             [data[label == i] for i in np.unique(label)]]
 
 
+def mean_images_global(data):
+    return data.mean(0)
+
+
 def old_segment(image, n_c):
     kmeans = KMeans(n_clusters=n_c, random_state=0).fit(image.reshape(-1, 1))
     return kmeans.labels_ * (255/n_c)
@@ -48,5 +53,10 @@ def old_segment_images(rows, n_c):
     return np.array([old_segment(i, n_c) for i in rows])
 
 
-# def segment(image, n_t):
-#     pass
+def adjust_histogram(img, mean):
+    return match_histograms(img, mean)
+
+
+def adjust_histograms(data):
+    mean = mean_images_global(data)
+    return [adjust_histogram(i, mean) for i in data]
