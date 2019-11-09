@@ -107,11 +107,11 @@ def print_dry(m, dry):
 # PREPROCESSING
 ####
 def pre_processed_file(file_value, option, rand=0):
+    if option.randomize:
+        file_value = preprocess.randomize(file_value, rand)
     if option.split is not None:
         file_value, file_value_test = preprocess.split_data(file_value,
-                                                            option.split,
-                                                            option.randomize,
-                                                            rand)
+                                                            option.split)
     else:
         file_value_test = file_value
     return file_value, file_value_test
@@ -120,14 +120,16 @@ def pre_processed_file(file_value, option, rand=0):
 def pre_processed_data(option, rand, dry=True):
     data = get_data(folder=option.folder, data_file=option.data)
     print_dry('data loaded', dry)
+    # if option.wiener:
+    #     data = preprocess.apply_images(data)
+    #     print_dry('images deconvoluted', dry)
+    #     print(data)
     if option.equalize:
         data = preprocess.equalize_histograms(data)
         print_dry('histogram equalized', dry)
     if option.histogram:
         data = preprocess.adjust_histograms(data)
         print_dry('histogram matched', dry)
-    # if option.filters is not None:
-    #     data = preprocess.filter_images(option.filters, data)
     if option.size is not None:
         data = preprocess.resize_batch(data, option.size)
         print_dry('data resized', dry)

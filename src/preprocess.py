@@ -11,29 +11,28 @@ import cv2
 import numpy as np
 from sklearn.cluster import KMeans
 from skimage.exposure import match_histograms, equalize_hist
-# from skimage.filters import meijering, sato, frangi, hessian
 from skimage.transform import resize
-from skimage.filters import threshold_isodata
-# , pyramid_reduce  # , downscale_local_mean
+from skimage.filters import threshold_isodata, sobel, roberts
+from skimage.segmentation import slic, felzenszwalb, watershed
+from skimage.color import label2rgb, rgb2gray, gray2rgb
+from skimage.future.graph import rag_mean_color, cut_threshold
 
 
-# FILTER = {'m': meijering,
-#           's': sato,
-#           'f': frangi,
-#           'h': hessian}
-
-
-def split_data(data, train_size=0.7, shuffle=False, random_state=0):
+def split_data(data, train_size=0.7):
     data_train, data_test = train_test_split(data,
-                                             shuffle=shuffle,
-                                             random_state=random_state,
+                                             shuffle=False,
                                              train_size=train_size)
     return data_train, data_test
 
 
+def randomize(data, rand):
+    np.random.seed(rand)
+    return np.random.shuffle(data)
+
+
 def new_resize_img(row, d):
     dim = int(len(row) ** (1/2))
-    img = row.reshape(dim, dim, )
+    img = row.reshape(dim, dim)
     return resize(img, d).flatten()
 
 
@@ -86,15 +85,6 @@ def equalize_histograms(data):
     return np.array([equalize_hist(i) for i in data])
 
 
-# def filter_image(f, img):
-#     dim = int(len(img) ** (1/2))
-#     img = img.reshape(dim, dim)
-#     return FILTER[f](img).flatten()*100
-
-
-# def filter_images(f, data):
-#     return np.array([filter_image(f, i) for i in data])
-
 def binarise(img):
     th = threshold_isodata(img)
     return (img > th) * 255
@@ -102,3 +92,19 @@ def binarise(img):
 
 def binarise_images(data):
     return np.array([binarise(i) for i in data])
+
+
+# def apply_test(img):
+#     dim = int(len(img) ** (1/2))
+#     img = img.reshape(dim, dim)
+#     #labels = slic(img, compactness=20, n_segments=100)
+#     #g = rag_mean_color(img, labels)
+#     #labels2 = cut_threshold(labels, g, 10)
+#     #labels = felzenszwalb(img, scale=10, sigma=0.5, min_size=10)
+#     labels = roberts(img)
+#     return labels.flatten()
+#     return rgb2gray(label2rgb(labels, img, kind='avg')).flatten()
+
+
+# def apply_images(data):
+#     return np.array([apply_test(i) for i in data])
