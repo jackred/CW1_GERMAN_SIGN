@@ -27,6 +27,7 @@ def sk_bayes(fn, data_train, label_train, data_test, label_test):
     nb = fn()
     y_predicted = nb.fit(data_train, label_train).predict(data_test)
     lb = np.unique(label_train)
+    # print((y_predicted == label_test).sum())
     matrix_confusion(label_test, y_predicted, lb)
     return data_test, y_predicted
 
@@ -53,7 +54,7 @@ def bayes(name_nb, fn_label, data_train, data_test, cm):
 if __name__ == '__main__':
     args = bayes_args()
     rand = np.random.randint(10000000)
-    data_train, data_test = pre_processed_data(args, rand)
+    data_train, data_test = pre_processed_data(args, rand, False)
     bayes(name_nb=args.bayes,
           fn_label=lambda sep='', i='':
           pre_processed_label(option=args, rand=rand,
