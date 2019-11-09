@@ -32,7 +32,8 @@ def split_data(data, train_size=0.7):
 
 def randomize(data, rand):
     np.random.seed(rand)
-    return np.random.shuffle(data)
+    np.random.shuffle(data)
+    return data
 
 
 def new_resize_img(row, d):
