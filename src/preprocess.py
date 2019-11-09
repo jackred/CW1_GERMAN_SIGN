@@ -12,10 +12,15 @@ import numpy as np
 from sklearn.cluster import KMeans
 from skimage.exposure import match_histograms, equalize_hist
 from skimage.transform import resize
-from skimage.filters import threshold_isodata, sobel, roberts
+from skimage.filters import threshold_isodata, sobel, roberts, scharr, \
+    prewitt, gaussian, median
 from skimage.segmentation import slic, felzenszwalb, watershed
-from skimage.color import label2rgb, rgb2gray, gray2rgb
+from skimage.color import label2rgb, rgb2gray  # , gray2rgb
 from skimage.future.graph import rag_mean_color, cut_threshold
+
+
+FILTER = {'s': sobel, 'r': roberts, 'p': prewitt, 'c': scharr, 'm': median,
+          'g': gaussian}
 
 
 def split_data(data, train_size=0.7):
@@ -94,17 +99,39 @@ def binarise_images(data):
     return np.array([binarise(i) for i in data])
 
 
-# def apply_test(img):
-#     dim = int(len(img) ** (1/2))
-#     img = img.reshape(dim, dim)
-#     #labels = slic(img, compactness=20, n_segments=100)
-#     #g = rag_mean_color(img, labels)
-#     #labels2 = cut_threshold(labels, g, 10)
-#     #labels = felzenszwalb(img, scale=10, sigma=0.5, min_size=10)
-#     labels = roberts(img)
-#     return labels.flatten()
-#     return rgb2gray(label2rgb(labels, img, kind='avg')).flatten()
+def watershed_g(img):
+    gradient = sobel(img)
+    labels = watershed(gradient)
+    return labels
 
 
-# def apply_images(data):
-#     return np.array([apply_test(i) for i in data])
+def cut_thr(img, labels, n=10):
+    g = rag_mean_color(img, labels)
+    labels2 = cut_threshold(labels, g, n)
+    return labels2
+
+
+SEGMENT = {'s': slic, 'w': watershed_g, 'f': felzenszwalb, 't': cut_thr}
+
+
+def segment(img, s):
+    dim = int(len(img) ** (1/2))
+    img = img.reshape(dim, dim)
+    labels = SEGMENT[s[0]](img)
+    if len(s) == 1:
+        labels = cut_thr(img, labels)
+    return rgb2gray(label2rgb(labels, img, kind='avg')).flatten()
+
+
+def segment_images(data, s):
+    return np.array([segment(i, s) for i in data])
+
+
+def filters(img, ed):
+    dim = int(len(img) ** (1/2))
+    img = img.reshape(dim, dim)
+    return FILTER[ed](img).flatten()
+
+
+def filter_images(data, ed):
+        return np.array([filters(i, ed) for i in data])

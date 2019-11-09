@@ -20,7 +20,30 @@ def float_or_int(i):
         raise argparse.ArgumentTypeError(msg)
 
 
-FILTER_LIST = ['m', 's', 'f', 'h']
+FILTER_LIST = ['s', 'r', 'p', 'c', 'm', 'g']
+SEGMENT_LIST = ['w', 's', 'f']
+TH_OPTION = 't'
+
+
+def choice_segment(c):
+    if len(c) > 2:
+        msg = 'too much argument for segment'
+        raise argparse.ArgumentTypeError(msg)
+    elif len(c) == 2:
+        if c[0] in SEGMENT_LIST and c[1] == TH_OPTION:
+            return (c[0], c[1])
+        else:
+            msg = 'First arg must be w/s/f and second t'
+            raise argparse.ArgumentTypeError(msg)
+    elif len(c) == 1:
+        if c in SEGMENT_LIST:
+            return c
+        else:
+            msg = 'Arg must be w/s/f'
+            raise argparse.ArgumentTypeError(msg)
+    else:
+        msg = 'No arg provided'
+        raise argparse.ArgumentTypeError(msg)
 
 
 def parse_args(name):
@@ -28,7 +51,7 @@ def parse_args(name):
     argp.add_argument('-r', dest='randomize', default=False,
                       action='store_true')
     argp.add_argument('-s', dest='split', type=float_or_int)
-    argp.add_argument('-g', dest='segment', type=int)
+    argp.add_argument('-k', dest='kmeans', type=int)
     argp.add_argument('-d', dest='data')
     argp.add_argument('-l', dest='label')
     argp.add_argument('-f', dest='folder')
@@ -39,7 +62,8 @@ def parse_args(name):
                       action='store_true')
     argp.add_argument('-bin', dest='binarise', default=False,
                       action='store_true')
-    # argp.add_argument('-fi', dest='filters', choices=FILTER_LIST)
+    argp.add_argument('-fi', dest='filters', choices=FILTER_LIST)
+    argp.add_argument('-g', dest='segment', type=choice_segment)
     return argp
 
 

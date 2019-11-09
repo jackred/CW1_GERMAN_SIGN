@@ -120,10 +120,6 @@ def pre_processed_file(file_value, option, rand=0):
 def pre_processed_data(option, rand, dry=True):
     data = get_data(folder=option.folder, data_file=option.data)
     print_dry('data loaded', dry)
-    # if option.wiener:
-    #     data = preprocess.apply_images(data)
-    #     print_dry('images deconvoluted', dry)
-    #     print(data)
     if option.equalize:
         data = preprocess.equalize_histograms(data)
         print_dry('histogram equalized', dry)
@@ -134,11 +130,17 @@ def pre_processed_data(option, rand, dry=True):
         data = preprocess.resize_batch(data, option.size)
         print_dry('data resized', dry)
     if option.segment is not None:
-        data = preprocess.old_segment_images(data, option.segment)
+        data = preprocess.segment_images(data, option.segment)
         print_dry('data segmented', dry)
+    if option.kmeans is not None:
+        data = preprocess.old_segment_images(data, option.kmeans)
+        print_dry('data kmeans-ed', dry)
     if option.binarise:
         data = preprocess.binarise_images(data)
         print_dry('data binarised', dry)
+    if option.filters is not None:
+        data = preprocess.filter_images(data, option.filters)
+        print(data, data.shape)
     return pre_processed_file(data, option, rand)
 
 
