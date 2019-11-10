@@ -120,6 +120,9 @@ def pre_processed_file(file_value, option, rand=0):
 def pre_processed_data(option, rand, dry=True):
     data = get_data(folder=option.folder, data_file=option.data)
     print_dry('data loaded', dry)
+    if option.contrast:
+        data = preprocess.contrast_images(data, option.contrast)
+        print_dry('data contrasted', dry)
     if option.equalize:
         data = preprocess.equalize_histograms(data)
         print_dry('histogram equalized', dry)

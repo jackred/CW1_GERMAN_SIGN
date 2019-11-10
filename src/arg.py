@@ -23,6 +23,7 @@ def float_or_int(i):
 FILTER_LIST = ['s', 'r', 'p', 'c', 'm', 'g']
 SEGMENT_LIST = ['w', 's', 'f']
 TH_OPTION = 't'
+CONTRAST_LIST = ['e', 'm', 'a', 'l']
 
 
 def choice_segment(c):
@@ -33,16 +34,30 @@ def choice_segment(c):
         if c[0] in SEGMENT_LIST and c[1] == TH_OPTION:
             return (c[0], c[1])
         else:
-            msg = 'First arg must be w/s/f and second t'
+            msg = 'First arg must be ' + str(SEGMENT_LIST) + \
+                ' and second an interger > 0'
             raise argparse.ArgumentTypeError(msg)
     elif len(c) == 1:
         if c in SEGMENT_LIST:
             return c
         else:
-            msg = 'Arg must be w/s/f'
+            msg = 'Arg must be ' + str(SEGMENT_LIST)
             raise argparse.ArgumentTypeError(msg)
     else:
         msg = 'No arg provided'
+        raise argparse.ArgumentTypeError(msg)
+
+
+def contrast_arg(c):
+    if len(c) >= 2:
+        if c[0] in CONTRAST_LIST and c[1:].isdigit() and int(c[1:]) > 0:
+            return (c[0], int(c[1:]))
+        else:
+            msg = 'First arg must be ' + str(CONTRAST_LIST) + \
+                ' and second t'
+            raise argparse.ArgumentTypeError(msg)
+    else:
+        msg = 'No enough arg provided'
         raise argparse.ArgumentTypeError(msg)
 
 
@@ -55,6 +70,7 @@ def parse_args(name):
     argp.add_argument('-d', dest='data')
     argp.add_argument('-l', dest='label')
     argp.add_argument('-f', dest='folder')
+    argp.add_argument('-c', dest='contrast', type=contrast_arg)
     argp.add_argument('-z', dest='size', type=int)
     argp.add_argument('-hi', dest='histogram', default=False,
                       action='store_true')

@@ -17,10 +17,15 @@ from skimage.filters import threshold_isodata, sobel, roberts, scharr, \
 from skimage.segmentation import slic, felzenszwalb, watershed
 from skimage.color import label2rgb, rgb2gray  # , gray2rgb
 from skimage.future.graph import rag_mean_color, cut_threshold
-
+from skimage.morphology import disk
+from skimage.filters.rank import enhance_contrast, median as fr_median, mean, \
+    autolevel
+from skimage.util import img_as_ubyte
 
 FILTER = {'s': sobel, 'r': roberts, 'p': prewitt, 'c': scharr, 'm': median,
           'g': gaussian}
+CONTRAST = {'e': enhance_contrast, 'm': fr_median, 'a': mean, 'l': autolevel}
+# a for mean cause average, and l for autolevel cause level, of course
 
 
 def split_data(data, train_size=0.7):
@@ -135,4 +140,14 @@ def filters(img, ed):
 
 
 def filter_images(data, ed):
-        return np.array([filters(i, ed) for i in data])
+    return np.array([filters(i, ed) for i in data])
+
+
+def contrast(img, fr):
+    dim = int(len(img) ** (1/2))
+    img = img.reshape(dim, dim).astype(np.uint16)
+    return CONTRAST[fr[0]](img, disk(fr[1])).flatten()
+
+
+def contrast_images(data, fr):
+    return np.array([contrast(i, fr) for i in data])
