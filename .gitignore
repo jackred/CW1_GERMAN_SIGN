@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.classs
 .idea
+src/NEAT/*.txt
 
 # C extensions
 *.so
