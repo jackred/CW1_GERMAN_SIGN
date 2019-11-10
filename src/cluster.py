@@ -46,7 +46,7 @@ def kmeans(data_train, data_test, label_train, label_test, args):
     print('kmeans')
     switch_choice = {'k': lambda: 'k-means++', 'r': lambda: 'random',
                      'm': lambda: mean_image(label_train, data_train)}
-    kmeans = KMeans(n_clusters=12, random_state=0,
+    kmeans = KMeans(n_clusters=10, random_state=0,
                     init=switch_choice[args.init]()).fit(data_train)    
     predicted = kmeans.predict(data_test)
     print('kmeans done')
@@ -62,9 +62,9 @@ def main():
     label_train, label_test = pre_processed_label(args, rand)
     print('data loaded')
     kmeans(data_train, data_test, label_train, label_test, args)
-    # featureagglomeration(data_train, data_test, label_train, label_test)
-    # spectralclustering(data_train, data_test, label_train, label_test)
-    # minibatchkmeans(data_train, data_test, label_train, label_test)
+    featureagglomeration(data_train, data_test, label_train, label_test)
+    spectralclustering(data_train, data_test, label_train, label_test)
+    minibatchkmeans(data_train, data_test, label_train, label_test)
     print('done')
 
 def compare_class(predicted, label):
