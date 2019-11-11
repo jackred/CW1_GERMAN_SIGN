@@ -26,10 +26,11 @@ L = 8
 ####
 # WRITE DATA
 ####
-def write_data_to_file(name, data, fmt='%.3f', h=''):
+def write_data_to_file(name, data, fmt='%.3f', h='', cmt=''):
     # print(name)
     # print(data.shape)
-    np.savetxt(name, data, delimiter=',', fmt=fmt, header=h, comments='')
+    print('->> %s' % name)
+    np.savetxt(name, data, delimiter=',', fmt=fmt, header=h, comments=cmt)
 
 
 ####
