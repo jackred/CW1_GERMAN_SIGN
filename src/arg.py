@@ -63,6 +63,7 @@ def contrast_arg(c):
 
 def parse_args(name):
     argp = argparse.ArgumentParser(name)
+    argp.add_argument('-col', dest='columns', type=int, nargs='+')
     argp.add_argument('-r', dest='randomize', default=False,
                       action='store_true')
     argp.add_argument('-s', dest='split', type=float_or_int)
@@ -81,6 +82,7 @@ def parse_args(name):
                       action='store_true')
     argp.add_argument('-fi', dest='filters', choices=FILTER_LIST)
     argp.add_argument('-g', dest='segment', type=choice_segment)
+    argp.add_argument('-x', dest='extract', type=int, nargs='+')
     return argp
 
 

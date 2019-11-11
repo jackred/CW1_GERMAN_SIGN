@@ -35,8 +35,12 @@ def write_data_to_file(name, data, fmt='%.3f', h='', cmt=''):
 ####
 # READ DATA
 ####
-def get_data_from_file(name, deli=DELI, dtype=float):
-    return np.loadtxt(name, delimiter=deli, skiprows=1, dtype=dtype)
+def get_data_from_file(name, deli=DELI, dtype=float, col=None):
+    if col is None:
+        return np.loadtxt(name, delimiter=deli, skiprows=1, dtype=dtype)
+    else:
+        return np.loadtxt(name, delimiter=deli, skiprows=1, dtype=dtype,
+                          usecols=col)
 
 
 # give label as numpy array of integer
@@ -49,10 +53,10 @@ def get_label(sep='', i='', folder=FOLDER, label_file=LABEL_FILE,
 
 
 # give data as numpy array of integer
-def get_data(folder=FOLDER, data_file=DATA_FILE, deli=DELI):
+def get_data(folder=FOLDER, data_file=DATA_FILE, deli=DELI, col=None):
     folder = folder or FOLDER
     data_file = data_file or DATA_FILE
-    return get_data_from_file(folder+data_file, deli)
+    return get_data_from_file(folder+data_file, deli, col=col)
 
 
 # give data as numpy of string (one cell = one row)
@@ -118,7 +122,8 @@ def pre_processed_file(file_value, option, rand=0):
 
 
 def pre_processed_data(option, rand, dry=True):
-    data = get_data(folder=option.folder, data_file=option.data)
+    data = get_data(folder=option.folder, data_file=option.data,
+                    col=option.columns)
     print_dry('data loaded', dry)
     if option.contrast:
         data = preprocess.contrast_images(data, option.contrast)
@@ -146,6 +151,8 @@ def pre_processed_data(option, rand, dry=True):
         print_dry('data binarised', dry)
     if option.filters is not None:
         data = preprocess.filter_images(data, option.filters)
+    if option.extract is not None:
+        data = preprocess.extract_col(data, option.extract)
     return pre_processed_file(data, option, rand)
 
 

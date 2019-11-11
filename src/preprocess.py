@@ -161,3 +161,7 @@ def contrast(img, fr):
 
 def contrast_images(data, fr):
     return np.array([contrast(i, fr) for i in data])
+
+
+def extract_col(data, index):
+    return data[:, index]
