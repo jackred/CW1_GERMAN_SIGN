@@ -20,7 +20,7 @@ from skimage.future.graph import rag_mean_color, cut_threshold
 from skimage.morphology import disk
 from skimage.filters.rank import enhance_contrast, median as fr_median, mean, \
     autolevel
-from skimage.util import img_as_ubyte
+from skimage.measure import block_reduce
 
 FILTER = {'s': sobel, 'r': roberts, 'p': prewitt, 'c': scharr, 'm': median,
           'g': gaussian}
@@ -39,6 +39,16 @@ def randomize(data, rand):
     np.random.seed(rand)
     np.random.shuffle(data)
     return data
+
+
+def pooling(row, d):
+    dim = int(len(row) ** (1/2))
+    img = row.reshape(dim, dim)
+    return block_reduce(img, d, func=np.max).flatten()
+
+
+def pooling_images(data, l):
+    return np.array([pooling(i, (l, l)) for i in data])
 
 
 def new_resize_img(row, d):

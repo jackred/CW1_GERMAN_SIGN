@@ -29,7 +29,6 @@ L = 8
 def write_data_to_file(name, data, fmt='%.3f', h='', cmt=''):
     # print(name)
     # print(data.shape)
-    print('->> %s' % name)
     np.savetxt(name, data, delimiter=',', fmt=fmt, header=h, comments=cmt)
 
 
@@ -132,6 +131,9 @@ def pre_processed_data(option, rand, dry=True):
         print_dry('histogram matched', dry)
     if option.size is not None:
         data = preprocess.resize_batch(data, option.size)
+        print_dry('data resized', dry)
+    if option.pooling is not None:
+        data = preprocess.pooling_images(data, option.pooling)
         print_dry('data resized', dry)
     if option.segment is not None:
         data = preprocess.segment_images(data, option.segment)

@@ -72,6 +72,7 @@ def parse_args(name):
     argp.add_argument('-f', dest='folder')
     argp.add_argument('-c', dest='contrast', type=contrast_arg)
     argp.add_argument('-z', dest='size', type=int)
+    argp.add_argument('-p', dest='pooling', type=int)
     argp.add_argument('-hi', dest='histogram', default=False,
                       action='store_true')
     argp.add_argument('-eh', dest='equalize', default=False,
