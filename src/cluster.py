@@ -20,33 +20,41 @@ def find_highest(old):
         arr = np.append(arr, int(result[0][0]))
     return arr
 
-def featureagglomeration(data_train, data_test, label_train, label_test):
+def featureagglomeration(data_train, data_test, label_train, label_test, args):
     print('feature agglomeration')
     FA = FeatureAgglomeration(n_clusters=10).fit(data_train)
     transformation = FA.transform(data_test)
     agglomeration = find_highest(transformation)
     print('feature agglomeration done')
     compare_class(agglomeration, label_test)
+    if args.create_mean:
+        create_images_from_rows('fa', mean_image(agglomeration, data_test))
 
-def spectralclustering(data_train, data_test, label_train, label_test):
+def spectralclustering(data_train, data_test, label_train, label_test, args):
     print('spectral clustering')
-    SC = SpectralClustering(n_clusters=10, assign_labels="discretize").fit(data_train)
+    SC = SpectralClustering(n_clusters=10, affinity='nearest_neighbors').fit(data_train)
     predict = SC.fit_predict(data_test)
     print('spectral clustering done')
     compare_class(predict, label_test)
+    if args.create_mean:
+        create_images_from_rows('SC', mean_image(SC.labels_, data_test))
 
-def minibatchkmeans(data_train, data_test, label_train, label_test):
+def minibatchkmeans(data_train, data_test, label_train, label_test, args):
     print('mini batch kmeans')
-    MKMeans = MiniBatchKMeans(n_clusters=10).fit(data_train)
+    switch_choice = {'k': lambda: 'k-means++', 'r': lambda: 'random',
+                     'm': lambda: mean_image(label_train, data_train)}
+    MKMeans = MiniBatchKMeans(n_clusters=10, init=switch_choice[args.init](), n_init=100).fit(data_train)
     predict = MKMeans.predict(data_test)
     print('mini batch kmeans done')
     compare_class(predict, label_test)
+    if args.create_mean:
+        create_images_from_rows('mbkm', MKMeans.cluster_centers_)
 
 def kmeans(data_train, data_test, label_train, label_test, args):
     print('kmeans')
     switch_choice = {'k': lambda: 'k-means++', 'r': lambda: 'random',
                      'm': lambda: mean_image(label_train, data_train)}
-    kmeans = KMeans(n_clusters=10, random_state=0,
+    kmeans = KMeans(n_clusters=10, random_state=0, n_init=100,
                     init=switch_choice[args.init]()).fit(data_train)    
     predicted = kmeans.predict(data_test)
     print('kmeans done')
@@ -62,9 +70,9 @@ def main():
     label_train, label_test = pre_processed_label(args, rand)
     print('data loaded')
     kmeans(data_train, data_test, label_train, label_test, args)
-    featureagglomeration(data_train, data_test, label_train, label_test)
-    spectralclustering(data_train, data_test, label_train, label_test)
-    minibatchkmeans(data_train, data_test, label_train, label_test)
+    minibatchkmeans(data_train, data_test, label_train, label_test, args)
+    featureagglomeration(data_train, data_test, label_train, label_test, args)
+    spectralclustering(data_train, data_test, label_train, label_test, args)
     print('done')
 
 def compare_class(predicted, label):
@@ -75,10 +83,9 @@ def compare_class(predicted, label):
     print('found: ', found)
     print('label: ', label_nb)
     matrix_confusion(label, predicted, unique_l)
-    for j in range(0, len(unique_l)):
-        predicted = (predicted + 1) % len(unique_l)
-        matrix_confusion(label, predicted, unique_l)
-
+    # for j in range(0, len(unique_l)):
+    #     predicted = (predicted + 1) % len(unique_l)
+    #     matrix_confusion(label, predicted, unique_l)
 
 if __name__ == '__main__':
     main()
