@@ -1,5 +1,5 @@
 from arg import kmeans_args
-from sklearn.cluster import KMeans, FeatureAgglomeration, SpectralClustering, MiniBatchKMeans
+from sklearn.cluster import KMeans, FeatureAgglomeration, SpectralClustering, MiniBatchKMeans, Birch
 from helper import pre_processed_data, pre_processed_label, matrix_confusion, \
     create_images_from_rows
 import numpy as np
@@ -12,6 +12,15 @@ from preprocess import mean_image
     - Spectral Clustering
     - Mini Batch Kmeans
 '''
+
+def birch(data_train, data_test, label_train, label_test, args):
+    print('birch')
+    birch = Birch(n_clusters=10).fit(data_train)
+    predict = birch.predict(data_test)
+    print('birch done')
+    compare_class(predict, label_test)
+    if args.create_mean:
+        create_images_from_rows('bi', mean_image(predict, data_test))
 
 def find_highest(old):
     arr = np.array([])
@@ -43,7 +52,7 @@ def minibatchkmeans(data_train, data_test, label_train, label_test, args):
     print('mini batch kmeans')
     switch_choice = {'k': lambda: 'k-means++', 'r': lambda: 'random',
                      'm': lambda: mean_image(label_train, data_train)}
-    MKMeans = MiniBatchKMeans(n_clusters=10, init=switch_choice[args.init](), n_init=100).fit(data_train)
+    MKMeans = MiniBatchKMeans(n_clusters=10, init=switch_choice[args.init](), n_init=10).fit(data_train)
     predict = MKMeans.predict(data_test)
     print('mini batch kmeans done')
     compare_class(predict, label_test)
@@ -54,7 +63,7 @@ def kmeans(data_train, data_test, label_train, label_test, args):
     print('kmeans')
     switch_choice = {'k': lambda: 'k-means++', 'r': lambda: 'random',
                      'm': lambda: mean_image(label_train, data_train)}
-    kmeans = KMeans(n_clusters=10, random_state=0, n_init=100,
+    kmeans = KMeans(n_clusters=10, random_state=0, n_init=10,
                     init=switch_choice[args.init]()).fit(data_train)    
     predicted = kmeans.predict(data_test)
     print('kmeans done')
@@ -72,6 +81,7 @@ def main():
     kmeans(data_train, data_test, label_train, label_test, args)
     minibatchkmeans(data_train, data_test, label_train, label_test, args)
     featureagglomeration(data_train, data_test, label_train, label_test, args)
+    birch(data_train, data_test, label_train, label_test, args)
     spectralclustering(data_train, data_test, label_train, label_test, args)
     print('done')
 
