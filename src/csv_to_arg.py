@@ -20,7 +20,7 @@ def create_arf_file(n_attr, data, args, sep='', i=''):
     header += ('attribute label {%s}\n' %
                ','.join(str(int(i)) for i in np.sort(np.unique(data[:, -1]))))
     header += 'data'
-    helper.write_data_to_file((args.folder or helper.folder)+name+'.arff',
+    helper.write_data_to_file((args.folder or helper.FOLDER)+name+'.arff',
                               data, fmt='%d', h=header, cmt='@')
 
 
