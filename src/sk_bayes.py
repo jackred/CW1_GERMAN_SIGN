@@ -12,7 +12,7 @@ from sklearn.naive_bayes import GaussianNB, BernoulliNB, ComplementNB, \
 import numpy as np
 from helper import pre_processed_data, pre_processed_label, SEP, \
     matrix_confusion, create_images_from_rows
-from preprocess import mean_image
+from preprocess import mean_image, extract_col
 
 L = 8
 NB = {
@@ -23,28 +23,29 @@ NB = {
 }
 
 
-def sk_bayes(fn, data_train, label_train, data_test, label_test):
+def sk_bayes(fn, data_train, label_train, data_test, label_test, col):
     nb = fn()
-    y_predicted = nb.fit(data_train, label_train).predict(data_test)
+    y_predicted = nb.fit(extract_col(data_train, col), label_train)\
+                    .predict(extract_col(data_test, col))
     lb = np.unique(label_train)
-    # print((y_predicted == label_test).sum())
+    print((((y_predicted == label_test).sum()) / len(label_test)) * 100)
     matrix_confusion(label_test, y_predicted, lb)
     return data_test, y_predicted
 
 
-def bayes(name_nb, fn_label, data_train, data_test, cm):
+def bayes(name_nb, fn_label, data_train, data_test, cm, col):
     label_train, label_test = fn_label()
     print('using all class')
     print('****%s****' % NB[name_nb]['name'])
     res = []
     res.append(sk_bayes(NB[name_nb]['fn'], data_train, label_train, data_test,
-                        label_test))
+                        label_test, col))
     for i in range(10):
         print('=======')
         label_train, label_test = fn_label(sep=SEP, i=i)
         print('class %d' % i)
         res.append(sk_bayes(NB[name_nb]['fn'], data_train, label_train,
-                            data_test, label_test))
+                            data_test, label_test, col))
     if cm:
         for i in range(len(res)):
             create_images_from_rows('%d_b' % i,
@@ -61,4 +62,5 @@ if __name__ == '__main__':
                               sep=sep, i=i),
           data_train=data_train,
           data_test=data_test,
-          cm=args.create_mean)
+          cm=args.create_mean,
+          col=args.columns)

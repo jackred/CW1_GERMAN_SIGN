@@ -99,17 +99,19 @@ def adjust_histograms(data):
 
 
 def equalize_histogram(img):
-    return equalize_hist(img)*255
+    return (equalize_hist(img) * 255)
 
 
 def equalize_histograms(data):
-    return np.array([equalize_hist(i) for i in data])
+    return np.array([equalize_histogram(i) for i in data])
 
 
 def binarise(img):
-    th = threshold_isodata(img)
-    return (img > th) * 255
-
+    try:
+        th = threshold_isodata(img)
+        return (img > th) * 255
+    except:
+        return img
 
 def binarise_images(data):
     return np.array([binarise(i) for i in data])
@@ -134,7 +136,7 @@ def segment(img, s):
     dim = int(len(img) ** (1/2))
     img = img.reshape(dim, dim)
     labels = SEGMENT[s[0]](img)
-    if len(s) == 1:
+    if len(s) == 2:
         labels = cut_thr(img, labels)
     return rgb2gray(label2rgb(labels, img, kind='avg')).flatten()
 
@@ -164,4 +166,7 @@ def contrast_images(data, fr):
 
 
 def extract_col(data, index):
-    return data[:, index]
+    if index is not None:
+        return data[:, np.unique(index)]
+    else:
+        return data

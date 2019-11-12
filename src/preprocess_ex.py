@@ -24,7 +24,9 @@ def main():
         helper.write_data_to_file((args.folder or helper.FOLDER)
                                   + (args.name or 'processed_data') + '_l'
                                   + helper.EXT,
-                                  label)
+                                  label,
+                                  fmt='%d',
+                                  h='0')
     helper.write_data_to_file((args.folder or helper.FOLDER)
                               + (args.name or 'processed_data')
                               + helper.EXT,

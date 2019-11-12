@@ -122,8 +122,7 @@ def pre_processed_file(file_value, option, rand=0):
 
 
 def pre_processed_data(option, rand, dry=True):
-    data = get_data(folder=option.folder, data_file=option.data,
-                    col=option.columns)
+    data = get_data(folder=option.folder, data_file=option.data)
     print_dry('data loaded', dry)
     if option.contrast:
         data = preprocess.contrast_images(data, option.contrast)
@@ -146,11 +145,13 @@ def pre_processed_data(option, rand, dry=True):
     if option.kmeans is not None:
         data = preprocess.old_segment_images(data, option.kmeans)
         print_dry('data kmeans-ed', dry)
+    if option.filters is not None:
+        data = preprocess.filter_images(data, option.filters)
+        print_dry('image_filterized', dry)
+        print(data)
     if option.binarise:
         data = preprocess.binarise_images(data)
         print_dry('data binarised', dry)
-    if option.filters is not None:
-        data = preprocess.filter_images(data, option.filters)
     if option.extract is not None:
         data = preprocess.extract_col(data, option.extract)
     return pre_processed_file(data, option, rand)

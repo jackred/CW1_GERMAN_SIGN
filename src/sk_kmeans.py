@@ -11,7 +11,7 @@ from sklearn.cluster import KMeans
 from helper import pre_processed_data, pre_processed_label, matrix_confusion, \
     create_images_from_rows
 import numpy as np
-from preprocess import mean_image
+from preprocess import mean_image, extract_col
 
 
 def main():
@@ -23,12 +23,13 @@ def main():
     switch_choice = {'k': lambda: 'k-means++', 'r': lambda: 'random',
                      'm': lambda: mean_image(label_train, data_train)}
     kmeans = KMeans(n_clusters=10, random_state=0,
-                    init=switch_choice[args.init]()).fit(data_train)
-    predicted = kmeans.predict(data_test)
+                    init=switch_choice[args.init]()) \
+            .fit(extract_col(data_train, args.columns))
+    predicted = kmeans.predict(extract_col(data_test, args.columns))
     print('kmeans done')
     compare_class(predicted, label_test)
     if args.create_mean:
-        create_images_from_rows('km', kmeans.cluster_centers_)
+            create_images_from_rows('km', mean_image(predicted, data_test))
 
 
 def compare_class(predicted, label):
