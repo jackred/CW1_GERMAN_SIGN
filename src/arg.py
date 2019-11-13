@@ -63,26 +63,46 @@ def contrast_arg(c):
 
 def parse_args(name):
     argp = argparse.ArgumentParser(name)
-    argp.add_argument('-col', dest='columns', type=int, nargs='+')
+    argp.add_argument('-col', dest='columns', type=int, nargs='+',
+                      help='will only use the column given as argument')
     argp.add_argument('-r', dest='randomize', default=False,
-                      action='store_true')
-    argp.add_argument('-s', dest='split', type=float_or_int)
-    argp.add_argument('-k', dest='kmeans', type=int)
-    argp.add_argument('-d', dest='data')
-    argp.add_argument('-l', dest='label')
-    argp.add_argument('-f', dest='folder')
-    argp.add_argument('-c', dest='contrast', type=contrast_arg)
-    argp.add_argument('-z', dest='size', type=int)
-    argp.add_argument('-p', dest='pooling', type=int)
+                      action='store_true',
+                      help='randomize the file')
+    argp.add_argument('-s', dest='split', type=float_or_int,
+                      help='split the data set. 0-1 for percentage, else int')
+    #  argp.add_argument('-k', dest='kmeans', type=int)
+    argp.add_argument('-d', dest='data',
+                      help='name of the data file. With extension')
+    argp.add_argument('-l', dest='label',
+                      help='name of the label file. Without extension')
+    argp.add_argument('-f', dest='folder',
+                      help='name of the folder containing data (and label)')
+    argp.add_argument('-c', dest='contrast', type=contrast_arg,
+                      help='constrast filter: e:Enhance contrast, '
+                      + 'm:Median, a: Mean, l: Autolevel. Letter joint to'
+                      + ' an integer. Ex: -c a5 or -c e3')
+    argp.add_argument('-z', dest='size', type=int,
+                      help='Resize the images to the given size')
+    argp.add_argument('-p', dest='pooling', type=int,
+                      help='Apply max pooling with bloc of size (X,X) X given')
     argp.add_argument('-hi', dest='histogram', default=False,
-                      action='store_true')
+                      action='store_true',
+                      help='Match all histograms')
     argp.add_argument('-eh', dest='equalize', default=False,
-                      action='store_true')
+                      action='store_true',
+                      help='Equalize each histogram one by one')
     argp.add_argument('-bin', dest='binarise', default=False,
-                      action='store_true')
-    argp.add_argument('-fi', dest='filters', choices=FILTER_LIST)
-    argp.add_argument('-g', dest='segment', type=choice_segment)
-    argp.add_argument('-x', dest='extract', type=int, nargs='+')
+                      action='store_true',
+                      help='Binarise the image')
+    argp.add_argument('-fi', dest='filters', choices=FILTER_LIST,
+                      help='filter: s:Sobel, r:Roberts, p:Prewitt,'
+                      + ' c: Scharr, m:Median, g: Gaussian')
+    argp.add_argument('-g', dest='segment', type=choice_segment,
+                      help='Segment the image, f=Felzenzwalb, w=Watershed '
+                      + 's=Slic. Additionaly, by adding `t` like that : -g st,'
+                      + ' combine lower region under threshold')
+    argp.add_argument('-x', dest='extract', type=int, nargs='+',
+                      help='extract the given column after the processing')
     return argp
 
 
@@ -92,18 +112,22 @@ BAYES_LIST = ['gnb', 'cnb', 'bnb', 'mnb']
 def bayes_args():
     argp = parse_args('sk_learn naive bayes')
     argp.add_argument('-b', dest='bayes', required=True,
-                      choices=BAYES_LIST)
+                      choices=BAYES_LIST,
+                      help='type of naive used, Gaussian=gnb, Bernouilli=bnb,'
+                      + 'Complement=cnb, Multinomial=mnb')
     argp.add_argument('-cm', dest='create_mean', default=False,
-                      action='store_true')
+                      action='store_true',
+                      help='create the image of mean of the label')
     return argp.parse_args()
 
 
 def kmeans_args():
     argp = parse_args('sk_learn kmeans')
     argp.add_argument('-i', dest='init', default='k',
-                      help='k: kmeans++ | m: mean | r: random')
+                      help='how to init: k: kmeans++ | m: mean | r: random')
     argp.add_argument('-cm', dest='create_mean', default=False,
-                      action='store_true')
+                      action='store_true',
+                      help='create the image of mean of the label')
     return argp.parse_args()
 
 
@@ -114,6 +138,8 @@ def bayes_net_args():
 
 def preprocess_args():
     argp = parse_args('preprocessing')
-    argp.add_argument('-n', dest='name', default='')
-    argp.add_argument('-m', dest='mean', default=False, action='store_true')
+    argp.add_argument('-n', dest='name', default='',
+                      help='name of the file (without extension)')
+    argp.add_argument('-m', dest='mean', default=False, action='store_true',
+                      help='create the file/image using the mean of the images')
     return argp.parse_args()
