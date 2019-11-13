@@ -16,6 +16,7 @@ def main():
     args = arg.preprocess_args()
     rand = random.randint(0, 9999999)
     data, _ = helper.pre_processed_data(args, rand, dry=False)
+    #  data = data.reshape(-1,48,48)
     if args.mean:
         label, _ = helper.pre_processed_label(args, rand, dry=False)
         data = preprocess.mean_image(label, data)
@@ -27,10 +28,13 @@ def main():
                                   label,
                                   fmt='%d',
                                   h='0')
+    # for i in range(4):
+    #     for j in range(4):
     helper.write_data_to_file((args.folder or helper.FOLDER)
-                              + (args.name or 'processed_data')
+                              + (args.name or 'processed_data')  # + str(i) + str(j)
                               + helper.EXT,
                               data,
+                              #  [k[i*12:(i*12)+12,j*12:(j*12)+12].flatten() for k in data],
                               h=', '.join(str(i) for i in range(len(data[0]))))
 
 
