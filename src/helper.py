@@ -142,9 +142,9 @@ def pre_processed_data(option, rand, dry=True):
     if option.segment is not None:
         data = preprocess.segment_images(data, option.segment)
         print_dry('data segmented', dry)
-    if option.kmeans is not None:
-        data = preprocess.old_segment_images(data, option.kmeans)
-        print_dry('data kmeans-ed', dry)
+    # if option.kmeans is not None:
+    #     data = preprocess.old_segment_images(data, option.kmeans)
+    #     print_dry('data kmeans-ed', dry)
     if option.filters is not None:
         data = preprocess.filter_images(data, option.filters)
         print_dry('image_filterized', dry)
@@ -197,4 +197,6 @@ def print_matrix(m, lb):
 # create and print confusion_matrix
 def matrix_confusion(label, predicted, lb):
     matrix = confusion_matrix(label, predicted)
+    #  print(100 * sum(max(matrix[:,i]) for i in range(len(matrix))) / len(label))
+    #  print(list(max(matrix[:,i]) for i in range(len(matrix))))
     print_matrix(matrix, lb)
