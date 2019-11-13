@@ -72,8 +72,8 @@ def resize_batch(b, d):
 
 
 def mean_image(label, data):
-    return [x.sum(axis=0) / len(x) for x in
-            [data[label == i] for i in np.unique(label)]]
+    return np.array([x.sum(axis=0) / len(x) for x in
+                     [data[label == i] for i in np.unique(label)]])
 
 
 def mean_images_global(data):
