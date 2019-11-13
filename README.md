@@ -94,12 +94,43 @@ python preprocess_ex.py -d r_hi.csv -n r10_hi_eh_hi -hi -eh -s 10 # equalize all
 python create_image.py -d r10_hi_eh_hi.csv # create the images without filter to see
 python create_image.py -d r10_hi_eh_hi.csv -bin -n r10bin # create the image with a binary filter 
 python create_image.py -d r10_hi_eh_hi.csv -fi r -bin -n r10binfir # create the image with a roberts filter and a binary filter
+python preprocess_ex.py -n total_hhh_10_att -d r_hi.csv -eh -hi -x 1173 1172 1095 1047 1132 1084 1273 1321 1850 1851 1320 1368 1187 1609 1121 1073 1423 1471 1412 1363 # create a file with 10 attributes from a triple equalized/matched histograms files
 ```
-
-
+ 
 
 ## Naive bayes
 ### Option
-* `-b {gnb,cnb,bnb,mnb}`: the type of naive bayes algorithm to be used. type of naive used, Gaussian=gnb, Bernouilli=bnb,Complement=cnb, Multinomial=mnb. Description can be found in the scikit-learn documentation. (gnb was mainly used)`
+
+* `-b {gnb,cnb,bnb,mnb}`: the type of naive bayes algorithm to be used. type of naive used, Gaussian=gnb, Bernouilli=bnb,Complement=cnb, Multinomial=mnb. Description can be found in the scikit-learn documentation. (gnb was mainly used)  
+ex: `python sk_bayes.py -b gnb -bin`: use bayes on the binarized default file with the gaussian naive bayes
+
+* `-cm`: generate the image of the mean of the label found by naive bayes
+
+### Example
+```
+python sk_bayes.py -b gnb -fi r -bin # run bayes after applying roberts filter and binarizing the images
+python sk_bayes.py -bnb -bin # apply bernouilli filter on binarized images
+```
+
+## K-Means
+
+### Option
+* `-i {m, r, k}`: choose the method to initialize kmeans centroids: k=kmeans++, m=mean, r=random  
+ex: `python sk_kmeans.py -i m`: to use the mean of each label to initialize kmeans
+
+* `-cm`: generate the image of the mean of the label found by kmeans
 
 
+### Example
+```
+python preprocess_ex.py -n r_hi -hi # match all histogram
+python sk_kmeans.py -cm -d r_hi.csv -bin # run sk_kmeans and generate the mean of the label as image on a binarised file named total_hi.csv
+
+python sk_kmeans.py -d r_hi.csv -fi p -c e6 -bin # run a not so bad kmeans
+```
+## CSV to ARFF
+This script convert a `csv` file to `arff` by mixing a label file and a data file together.  
+To simplify the process the program don't other algorithm than `-d`, `-f` and `-l` to change the target file and the `-n` to name the output file.
+
+By default the output file will be named `arf_y_train(_{0-9})
+.arff`
