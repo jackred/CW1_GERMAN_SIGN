@@ -148,7 +148,6 @@ def pre_processed_data(option, rand, dry=True):
     if option.filters is not None:
         data = preprocess.filter_images(data, option.filters)
         print_dry('image_filterized', dry)
-        print(data)
     if option.binarise:
         data = preprocess.binarise_images(data)
         print_dry('data binarised', dry)
