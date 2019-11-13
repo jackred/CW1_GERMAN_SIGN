@@ -7,8 +7,9 @@
 * Install all the packages listed in the `requirements.txt` file (`pip install -r requirements.txt`)
 * Create a `data` folder at the root of the project
 * Create a `img` and a `random` folder in the `data` folder
+* Add the data in the data folder
 * Run the program `randomize.py` (`python randomize.py`) to create the randomized files
-* 
+
 ## Option
 
 Every program will use by default the file `r_x_train_gr_smpl.csv` in the folder `../data/random`. The label name by default are `r_y_train_smpl(_X{0-9}).csv`.   
@@ -59,13 +60,46 @@ ex: `python sk_kmeans.py -d file1.csv -f ../data/ -l label_cool`: will use the d
 ## Pre-processing
 ### Pre-process a file
 The programme `preproces_ex.py` can be run with python:
-```python
+```
 python preprocess_ex.py 
 ```
 By default the file generated will be named `processed_data.csv` and the labels file `processed_data_l.csv`.
+
+It takes a file and apply a set of filter defined by the command line argument given and output the resulting file.
 ### Option
+
+* `-n` : name of the output file (without extension).  
+ex: `python preprocess_ex.py -bin -n p1`: will output a file named `p1.csv`, which the binarized version of the default file.
 
 
 ### Generate an image
+Images can also be generated to see what the different filter are. 
+The program `create_image.py` can be run with python:  
+```
+python create_image.py
+```
+By default the X files generated will be named `img_{X}.ppm`. The format used is [netpbm](https://en.wikipedia.org/wiki/Netpbm_format) P2, for gray images. 
+
+#### How To
+To avoid creating 12660 images, it it adviced to create a data set of 10 images and run the different experiment on it. It can me mixed with pre-processing the files, for example to apply twice the same filter.  
+And when a good combinations of filter is found, the full process can be applied to the full data set.
+
+#### Option
+* `-m`: this option can be used to generate the average of all the image of a label. It will need a label files (default or custom).
+
+#### Example
+```
+python preprocess_ex.py -n r_hi -hi # match all histogram
+python preprocess_ex.py -d r_hi.csv -n r10_hi_eh_hi -hi -eh -s 10 # equalize all each histogram, rematch them all and reduce the data set to 10 images
+python create_image.py -d r10_hi_eh_hi.csv # create the images without filter to see
+python create_image.py -d r10_hi_eh_hi.csv -bin -n r10bin # create the image with a binary filter 
+python create_image.py -d r10_hi_eh_hi.csv -fi r -bin -n r10binfir # create the image with a roberts filter and a binary filter
+```
+
+
+
+## Naive bayes
+### Option
+* `-b {gnb,cnb,bnb,mnb}`: the type of naive bayes algorithm to be used. type of naive used, Gaussian=gnb, Bernouilli=bnb,Complement=cnb, Multinomial=mnb. Description can be found in the scikit-learn documentation. (gnb was mainly used)`
 
 
