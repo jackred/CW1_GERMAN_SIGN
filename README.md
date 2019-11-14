@@ -127,6 +127,8 @@ python preprocess_ex.py -n r_hi -hi # match all histogram
 python sk_kmeans.py -cm -d r_hi.csv -bin # run sk_kmeans and generate the mean of the label as image on a binarised file named total_hi.csv
 
 python sk_kmeans.py -d r_hi.csv -fi p -c e6 -bin # run a not so bad kmeans
+
+python fs_kmeans.py # run a hand made kmeans
 ```
 ## CSV to ARFF
 This script convert a `csv` file to `arff` by mixing a label file and a data file together.  
