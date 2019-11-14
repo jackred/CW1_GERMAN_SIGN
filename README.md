@@ -79,6 +79,11 @@ The program `create_image.py` can be run with python:
 python create_image.py
 ```
 By default the X files generated will be named `img_{X}.ppm`. The format used is [netpbm](https://en.wikipedia.org/wiki/Netpbm_format) P2, for gray images. 
+### Example
+```
+python preprocess_ex.py -hi -n new_hi
+python preprocess_ex.py -eh -hi -d new_hi.csv -n nhhh # generate a file with all histogram equalized
+```
 
 #### How To
 To avoid creating 12660 images, it it adviced to create a data set of 10 images and run the different experiment on it. It can me mixed with pre-processing the files, for example to apply twice the same filter.  
