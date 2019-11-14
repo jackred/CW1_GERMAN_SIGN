@@ -130,6 +130,22 @@ python sk_kmeans.py -d r_hi.csv -fi p -c e6 -bin # run a not so bad kmeans
 
 python fs_kmeans.py # run a hand made kmeans
 ```
+
+## NEAT algorithm
+
+### Constructor
+
+Generation(population, data, label)
+* `population`: define the the number of neural network in a generation
+* `data`: the data to train
+* `label`: the label to use with the data
+
+### Functions
+
+* `cleanFitness()`: reset the fitness of all neural networks
+* `run_generation()`: use all data to calculate the fitness of all neural networks
+* `reproduce()`: copies the top 10 neural networks in the entire population after mutates the ones copied
+
 ## CSV to ARFF
 This script convert a `csv` file to `arff` by mixing a label file and a data file together.  
 To simplify the process the program don't other algorithm than `-d`, `-f` and `-l` to change the target file and the `-n` to name the output file.
